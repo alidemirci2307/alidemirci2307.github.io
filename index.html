@@ -1,175 +1,180 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Uygulama Gizlilik Politikaları</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Gizlilik Politikaları</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f5f7fa;
-      color: #1a1a2e;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-    header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
-      color: #fff;
-      padding: 56px 24px 44px;
-      text-align: center;
-    }
-    header h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; }
-    header p { margin-top: 10px; opacity: 0.7; font-size: 0.95rem; }
-    .btn-new {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 28px;
-      background: #fff;
-      color: #0f3460;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 12px 24px;
-      border-radius: 30px;
-      text-decoration: none;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .btn-new:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
-    main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
-    .section-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #888;
-      margin-bottom: 16px;
-    }
-    .app-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-    .app-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: box-shadow 0.15s, transform 0.15s;
-    }
-    .app-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
-    .app-card-header { display: flex; align-items: center; gap: 14px; }
-    .app-icon {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #0f3460, #1a6bb5);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-    .app-name { font-weight: 700; font-size: 0.98rem; color: #1a1a2e; }
-    .app-id { font-size: 0.76rem; color: #999; margin-top: 2px; font-family: monospace; }
-    .app-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tag {
-      font-size: 0.72rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      background: #eef2ff;
-      color: #3a56a0;
-      font-weight: 600;
-    }
-    .app-links { display: flex; gap: 10px; margin-top: 4px; }
-    .link-btn {
-      flex: 1;
-      text-align: center;
-      padding: 9px 14px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: opacity 0.15s;
-    }
-    .link-btn:hover { opacity: 0.85; }
-    .link-policy { background: #0f3460; color: #fff; }
-    .link-store { background: #f0f4ff; color: #0f3460; }
-    .empty { text-align: center; color: #bbb; padding: 48px 0; font-size: 0.95rem; }
-    footer { text-align: center; padding: 32px 24px; font-size: 0.83rem; color: #aaa; }
-    footer a { color: #0f3460; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--primary:#0f3460;--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--muted:#64748b;--radius:16px}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:#1e293b;line-height:1.6;overflow-x:hidden}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#0f3460 0%,#16213e 45%,#1a0a2e 100%);color:#fff;padding:80px 24px 72px;text-align:center;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;pointer-events:none}
+    .hero-bg span{position:absolute;border-radius:50%;opacity:.08;animation:float 10s ease-in-out infinite}
+    .hero-bg span:nth-child(1){width:400px;height:400px;background:#3b82f6;top:-150px;left:-100px}
+    .hero-bg span:nth-child(2){width:250px;height:250px;background:#8b5cf6;top:50px;right:-80px;animation-delay:-4s}
+    .hero-bg span:nth-child(3){width:180px;height:180px;background:#ec4899;bottom:-60px;left:50%;animation-delay:-7s}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-25px) rotate(5deg)}}
+    .hero-content{position:relative;z-index:1}
+    .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-1.5px}
+    .hero-sub{margin-top:12px;font-size:1.05rem;opacity:.7}
+    .hero-cta{display:inline-flex;align-items:center;gap:8px;margin-top:32px;background:#fff;color:var(--primary);font-weight:700;font-size:.9rem;padding:13px 26px;border-radius:30px;text-decoration:none;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .2s,box-shadow .2s}
+    .hero-cta:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.3);text-decoration:none}
+    .hero-stats{display:flex;align-items:center;justify-content:center;gap:32px;margin-top:40px;flex-wrap:wrap}
+    .stat{text-align:center}
+    .stat-num{font-size:2rem;font-weight:800;line-height:1}
+    .stat-label{font-size:.75rem;opacity:.6;margin-top:4px;text-transform:uppercase;letter-spacing:.8px}
+
+    /* Main */
+    main{max-width:960px;margin:0 auto;padding:56px 24px 80px}
+    .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .section-label{font-size:.72rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted)}
+    .filter-tabs{display:flex;gap:6px}
+    .filter-tab{padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s}
+    .filter-tab.active,.filter-tab:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+    /* Grid */
+    .app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+    .app-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease,box-shadow .2s}
+    .app-card.visible{opacity:1;transform:translateY(0)}
+    .app-card:hover{box-shadow:0 10px 32px rgba(0,0,0,.1);transform:translateY(-3px) !important}
+    .card-top{height:5px;background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+    .card-top.ios{background:linear-gradient(90deg,#06b6d4,#0f3460)}
+    .card-top.both{background:linear-gradient(90deg,#3b82f6,#ec4899)}
+    .card-body{padding:22px 22px 18px}
+    .card-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+    .app-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#0f3460,#1a6bb5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 4px 12px rgba(15,52,96,.2)}
+    .app-name{font-weight:700;font-size:.98rem;color:#1e293b}
+    .app-pkg{font-size:.72rem;color:var(--muted);margin-top:3px;font-family:monospace}
+    .plat-row{display:flex;align-items:center;gap:6px;margin-bottom:12px}
+    .plat-chip{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px}
+    .plat-chip.android{background:#dcfce7;color:#15803d}
+    .plat-chip.ios{background:#dbeafe;color:#1d4ed8}
+    .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+    .tag{font-size:.7rem;padding:3px 9px;border-radius:20px;background:#f1f5f9;color:#475569;font-weight:600}
+    .card-links{display:flex;gap:8px}
+    .link-btn{flex:1;text-align:center;padding:9px 12px;border-radius:10px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .2s}
+    .link-btn:hover{text-decoration:none;opacity:.85}
+    .btn-policy{background:var(--primary);color:#fff}
+    .btn-store{background:#f1f5f9;color:var(--primary)}
+
+    /* Empty state */
+    .empty{grid-column:1/-1;text-align:center;padding:64px 0;color:var(--muted)}
+    .empty-icon{font-size:3rem;margin-bottom:12px;opacity:.4}
+
+    footer{text-align:center;padding:32px 24px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--border)}
+    footer a{color:var(--primary)}
+
+    @media(max-width:600px){.hero-stats{gap:20px}.stat-num{font-size:1.5rem}}
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Gizlilik Politikaları</h1>
-  <p>Tüm uygulamalarımızın gizlilik politikalarına buradan ulaşabilirsiniz.</p>
-  <a href="/generator/" class="btn-new">+ Yeni Politika Oluştur</a>
-</header>
+<div class="hero">
+  <div class="hero-bg"><span></span><span></span><span></span></div>
+  <div class="hero-content">
+    <h1 id="h1">Gizlilik Politikaları</h1>
+    <p class="hero-sub" id="hs">Tüm uygulamalarımızın gizlilik politikalarına tek yerden erişin.</p>
+    <a href="/generator/" class="hero-cta" id="cta">+ Yeni Politika Oluştur</a>
+    <div class="hero-stats" id="stats">
+      <div class="stat"><div class="stat-num" id="stat-apps">—</div><div class="stat-label">Uygulama</div></div>
+      <div class="stat"><div class="stat-num" id="stat-plat">—</div><div class="stat-label">Platform</div></div>
+      <div class="stat"><div class="stat-num" id="stat-svc">—</div><div class="stat-label">Entegrasyon</div></div>
+    </div>
+  </div>
+</div>
 
 <main>
-  <p class="section-title">Yayınlanan Uygulamalar</p>
+  <div class="section-header">
+    <span class="section-label" id="count-label">Yükleniyor…</span>
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">Tümü</button>
+      <button class="filter-tab" data-filter="android">Android</button>
+      <button class="filter-tab" data-filter="ios">iOS</button>
+    </div>
+  </div>
   <div class="app-grid" id="grid">
-    <div class="empty">Yükleniyor…</div>
+    <div class="empty"><div class="empty-icon">⏳</div><p>Yükleniyor…</p></div>
   </div>
 </main>
 
 <footer>
-  <p>© <span id="yr"></span> · <a href="mailto:avsenatercan@gmail.com">avsenatercan@gmail.com</a></p>
+  <p>© <span id="yr"></span> · <a href="mailto:avsenatercan@gmail.com">avsenatercan@gmail.com</a> · <a href="/generator/">Yeni Politika Oluştur</a></p>
 </footer>
 
 <script>
-  document.getElementById('yr').textContent = new Date().getFullYear();
+document.getElementById('yr').textContent = new Date().getFullYear();
+gsap.from('#h1',{duration:.8,y:30,opacity:0,ease:'power3.out',delay:.1});
+gsap.from('#hs', {duration:.8,y:20,opacity:0,ease:'power3.out',delay:.3});
+gsap.from('#cta',{duration:.8,y:15,opacity:0,ease:'power3.out',delay:.5});
+gsap.from('#stats',{duration:.8,y:15,opacity:0,ease:'power3.out',delay:.65});
 
-  const SERVICE_LABELS = {
-    admob: 'AdMob',
-    onesignal: 'OneSignal',
-    premium: 'Premium',
-    firebase: 'Firebase'
-  };
+const SVC = {admob:'AdMob',onesignal:'OneSignal',firebase_analytics:'Firebase',firebase_crashlytics:'Crashlytics',amplitude:'Amplitude',mixpanel:'Mixpanel',sentry:'Sentry',adjust:'Adjust',appsflyer:'AppsFlyer',play_billing:'Play Billing',apple_iap:'App Store IAP',revenuecat:'RevenueCat',google_maps:'Maps',supabase:'Supabase',fcm:'FCM',firebase_auth:'Firebase Auth',google_signin:'Google Login',apple_signin:'Apple Login',facebook_login:'FB Login',facebook_audience:'FB Audience',unity_ads:'Unity Ads',applovin:'AppLovin',ironsource:'ironSource'};
 
-  fetch('/apps.json')
-    .then(r => r.json())
-    .then(apps => {
-      const grid = document.getElementById('grid');
-      if (!apps.length) {
-        grid.innerHTML = '<div class="empty">Henüz uygulama eklenmemiş.</div>';
-        return;
-      }
-      grid.innerHTML = apps.map(app => {
-        const tags = Object.entries(app.services || {})
-          .filter(([, v]) => v)
-          .map(([k]) => `<span class="tag">${SERVICE_LABELS[k] || k}</span>`)
-          .join('');
+let allApps = [];
+let currentFilter = 'all';
 
-        const storeBtn = app.playUrl
-          ? `<a href="${app.playUrl}" target="_blank" rel="noopener" class="link-btn link-store">Play Store</a>`
-          : '';
+function renderGrid(apps){
+  const grid = document.getElementById('grid');
+  const filtered = currentFilter==='all' ? apps : apps.filter(a=>a.platform===currentFilter||a.platform==='both');
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty"><div class="empty-icon">📭</div><p>Bu platformda uygulama yok.</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map((app,i)=>{
+    const tags = Object.entries(app.services||{}).filter(([,v])=>v).map(([k])=>'<span class="tag">'+(SVC[k]||k)+'</span>').join('');
+    const platChips = app.platform==='both'
+      ? '<span class="plat-chip android">Android</span><span class="plat-chip ios">iOS</span>'
+      : app.platform==='ios'
+        ? '<span class="plat-chip ios">iOS</span>'
+        : '<span class="plat-chip android">Android</span>';
+    const topClass = app.platform==='ios'?'ios':app.platform==='both'?'both':'';
+    const storeBtn = (app.playUrl||app.appStoreUrl)
+      ? '<a href="'+(app.playUrl||app.appStoreUrl)+'" target="_blank" rel="noopener" class="link-btn btn-store">Mağaza</a>' : '';
+    return '<div class="app-card" style="transition-delay:'+(i*0.06)+'s">'
+      +'<div class="card-top '+topClass+'"></div>'
+      +'<div class="card-body">'
+      +'<div class="card-header"><div class="app-icon">'+(app.icon||'📱')+'</div>'
+      +'<div><div class="app-name">'+app.name+'</div><div class="app-pkg">'+(app.packageId||'')+'</div></div></div>'
+      +'<div class="plat-row">'+platChips+'</div>'
+      +'<div class="tags">'+tags+'</div>'
+      +'<div class="card-links"><a href="/'+app.slug+'/" class="link-btn btn-policy">Gizlilik Politikası</a>'+storeBtn+'</div>'
+      +'</div></div>';
+  }).join('');
+  // Trigger reveal
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+  },{threshold:.08});
+  grid.querySelectorAll('.app-card').forEach(c=>obs.observe(c));
+  document.getElementById('count-label').textContent = filtered.length+' Uygulama';
+}
 
-        return `
-        <div class="app-card">
-          <div class="app-card-header">
-            <div class="app-icon">${app.icon || '📱'}</div>
-            <div>
-              <div class="app-name">${app.name}</div>
-              <div class="app-id">${app.packageId || ''}</div>
-            </div>
-          </div>
-          <div class="app-tags">${tags}</div>
-          <div class="app-links">
-            <a href="/${app.slug}/" class="link-btn link-policy">Gizlilik Politikası</a>
-            ${storeBtn}
-          </div>
-        </div>`;
-      }).join('');
-    })
-    .catch(() => {
-      document.getElementById('grid').innerHTML =
-        '<div class="empty">Uygulamalar yüklenemedi.</div>';
-    });
+document.querySelectorAll('.filter-tab').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderGrid(allApps);
+  });
+});
+
+fetch('/apps.json').then(r=>r.json()).then(apps=>{
+  allApps = apps;
+  renderGrid(apps);
+  // Stats
+  const platforms = new Set(apps.map(a=>a.platform==='both'?['android','ios']:[a.platform]).flat());
+  const svcCount = new Set(apps.flatMap(a=>Object.entries(a.services||{}).filter(([,v])=>v).map(([k])=>k))).size;
+  document.getElementById('stat-apps').textContent = apps.length;
+  document.getElementById('stat-plat').textContent = platforms.size;
+  document.getElementById('stat-svc').textContent = svcCount;
+}).catch(()=>{
+  document.getElementById('grid').innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><p>Yüklenemedi.</p></div>';
+});
 </script>
-
 </body>
 </html>

@@ -3,15 +3,37 @@
     "name": "Özel Güvenlik Sınav Soruları",
     "slug": "ozel-guvenlik-sinav-sorulari",
     "packageId": "ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari",
+    "platform": "android",
+    "developerName": "Sena Tercan Demirci",
+    "developerEmail": "avsenatercan@gmail.com",
     "playUrl": "https://play.google.com/store/apps/details?id=ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari&hl=tr",
+    "appStoreId": "",
     "icon": "🛡️",
-    "email": "avsenatercan@gmail.com",
     "services": {
       "admob": true,
       "onesignal": true,
-      "premium": true,
-      "firebase": true
+      "play_billing": true,
+      "firebase_analytics": true,
+      "firebase_crashlytics": false,
+      "firebase_auth": false,
+      "google_signin": false,
+      "apple_signin": false,
+      "facebook_login": false,
+      "amplitude": false,
+      "mixpanel": false,
+      "adjust": false,
+      "appsflyer": false,
+      "sentry": false,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "apple_iap": false,
+      "revenuecat": false,
+      "google_maps": false,
+      "supabase": false,
+      "fcm": false
     },
-    "updated": "13 Mayıs 2026"
+    "updated": "13 Mayıs 2026 / May 13, 2026"
   }
 ]

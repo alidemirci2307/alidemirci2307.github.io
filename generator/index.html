@@ -1,570 +1,507 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Gizlilik Politikası Oluşturucu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f5f7fa;
-      color: #1a1a2e;
-      line-height: 1.6;
-    }
-    .topbar {
-      background: #1a1a2e;
-      padding: 12px 24px;
-      font-size: 0.83rem;
-    }
-    .topbar a { color: #a0b4d6; text-decoration: none; }
-    .topbar a:hover { color: #fff; }
-    header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
-      color: #fff;
-      padding: 48px 24px 40px;
-      text-align: center;
-    }
-    header h1 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; }
-    header p { margin-top: 8px; opacity: 0.7; font-size: 0.93rem; }
-    .json-box {
-      background: #1a1a2e;
-      color: #7dd3fc;
-      border-radius: 10px;
-      padding: 16px;
-      font-family: "Menlo", monospace;
-      font-size: 0.78rem;
-      white-space: pre;
-      overflow-x: auto;
-      margin-top: 12px;
-    }
-    .json-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .json-label { font-size: 0.82rem; font-weight: 700; color: #0f3460; }
-    .step-badge {
-      display: inline-block;
-      background: #0f3460;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      margin-right: 8px;
-    }
-    .layout {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 24px 80px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      align-items: start;
-    }
-    @media (max-width: 768px) {
-      .layout { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #0f3460;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #e8f0fe;
-    }
-    .form-group { margin-bottom: 16px; }
-    label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #555;
-      margin-bottom: 6px;
-    }
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid #dde3ef;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: #1a1a2e;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input:focus { border-color: #0f3460; }
-    .checkbox-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 4px;
-    }
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border: 1.5px solid #dde3ef;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .checkbox-item:hover { border-color: #0f3460; background: #f7f9ff; }
-    .checkbox-item input { cursor: pointer; accent-color: #0f3460; }
-    .btn-generate {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #0f3460, #1a6bb5);
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.15s, transform 0.15s;
-    }
-    .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
-    .output-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #e8f0fe;
-    }
-    .output-header h2 { margin-bottom: 0; padding-bottom: 0; border: none; font-size: 1rem; font-weight: 700; color: #0f3460; }
-    .copy-actions { display: flex; gap: 8px; }
-    .btn-action {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.15s;
-    }
-    .btn-action:hover { opacity: 0.85; }
-    .btn-copy { background: #e8f0fe; color: #0f3460; }
-    .btn-download { background: #0f3460; color: #fff; }
-    #output-area {
-      width: 100%;
-      min-height: 420px;
-      padding: 14px;
-      border: 1.5px solid #dde3ef;
-      border-radius: 8px;
-      font-family: "Menlo", "Courier New", monospace;
-      font-size: 0.78rem;
-      color: #333;
-      resize: vertical;
-      background: #fafbfe;
-      white-space: pre;
-      overflow: auto;
-    }
-    .preview-btn {
-      display: block;
-      width: 100%;
-      padding: 11px;
-      margin-top: 10px;
-      background: #f0f4ff;
-      color: #0f3460;
-      font-weight: 600;
-      font-size: 0.85rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-align: center;
-    }
-    .preview-btn:hover { background: #e2eaff; }
-    .placeholder-msg {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 260px;
-      color: #bbb;
-      font-size: 0.9rem;
-      text-align: center;
-      gap: 10px;
-    }
-    .placeholder-msg span { font-size: 2.5rem; }
-    .toast {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #1a1a2e;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      transition: transform 0.3s;
-      pointer-events: none;
-      z-index: 999;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--primary:#0f3460;--primary-l:#1a6bb5;--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--muted:#64748b;--radius:14px}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:#1e293b;line-height:1.6;overflow-x:hidden}
+
+    /* Topbar */
+    .topbar{background:#0f3460;padding:12px 24px;font-size:.82rem}
+    .topbar a{color:#93c5fd;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .2s}
+    .topbar a:hover{color:#fff}
+
+    /* Hero */
+    .hero{background:linear-gradient(135deg,#0f3460,#16213e,#1a0a2e);color:#fff;padding:52px 24px 44px;text-align:center;position:relative;overflow:hidden}
+    .hero-bg span{position:absolute;border-radius:50%;opacity:.07;animation:float 9s ease-in-out infinite}
+    .hero-bg span:nth-child(1){width:260px;height:260px;background:#3b82f6;top:-80px;left:-60px}
+    .hero-bg span:nth-child(2){width:180px;height:180px;background:#8b5cf6;top:10px;right:-40px;animation-delay:-4s}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+    .hero h1{position:relative;font-size:clamp(1.5rem,3.5vw,2.2rem);font-weight:800;letter-spacing:-1px}
+    .hero p{position:relative;margin-top:8px;opacity:.7;font-size:.93rem}
+
+    /* Steps */
+    .step-bar{display:flex;align-items:center;justify-content:center;gap:0;margin:32px auto 0;max-width:480px}
+    .step-item{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+    .step-circle{width:32px;height:32px;border-radius:50%;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);color:rgba(255,255,255,.5);transition:all .3s;cursor:pointer}
+    .step-circle.active{background:#fff;color:var(--primary);border-color:#fff}
+    .step-circle.done{background:#10b981;color:#fff;border-color:#10b981}
+    .step-label{font-size:.68rem;opacity:.6;text-align:center;white-space:nowrap}
+    .step-label.active{opacity:1;color:#fff}
+    .step-line{height:2px;flex:1;background:rgba(255,255,255,.2);margin-top:-22px}
+    .step-line.done{background:#10b981}
+
+    /* Layout */
+    .layout{max-width:1100px;margin:0 auto;padding:36px 24px 80px;display:grid;grid-template-columns:1fr 420px;gap:24px;align-items:start}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+    /* Card */
+    .card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 2px 16px rgba(0,0,0,.05);overflow:hidden}
+    .card-header{padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+    .card-header h2{font-size:1rem;font-weight:700;color:var(--primary)}
+    .card-body{padding:24px}
+
+    /* Step panels */
+    .step-panel{display:none}
+    .step-panel.active{display:block}
+
+    /* Platform selector */
+    .plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
+    .plat-opt{border:2px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+    .plat-opt:hover{border-color:var(--primary);background:#f0f4ff}
+    .plat-opt input{display:none}
+    .plat-opt.selected{border-color:var(--primary);background:#eff6ff}
+    .plat-opt .plat-icon{font-size:1.8rem;display:block;margin-bottom:6px}
+    .plat-opt .plat-name{font-size:.82rem;font-weight:700;color:#1e293b}
+    .plat-opt .plat-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+
+    /* Form fields */
+    .form-group{margin-bottom:16px}
+    label{display:block;font-size:.8rem;font-weight:600;color:#475569;margin-bottom:5px}
+    input[type=text],input[type=email]{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.9rem;font-family:'Inter',sans-serif;color:#1e293b;outline:none;transition:border-color .2s}
+    input:focus{border-color:var(--primary)}
+
+    /* Service categories */
+    .cat-block{margin-bottom:18px}
+    .cat-title{font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .cat-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+    @media(max-width:480px){.svc-grid{grid-template-columns:1fr}}
+    .svc-opt{display:flex;align-items:center;gap:9px;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;transition:all .2s;user-select:none;font-size:.82rem}
+    .svc-opt:hover{border-color:var(--primary-l);background:#f8fafc}
+    .svc-opt.selected{border-color:var(--primary);background:#eff6ff}
+    .svc-opt input{accent-color:var(--primary)}
+    .svc-icon{font-size:1rem;flex-shrink:0}
+    .svc-info{flex:1;min-width:0}
+    .svc-name{font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .svc-badge{font-size:.62rem;padding:1px 6px;border-radius:20px;font-weight:700;margin-left:5px}
+
+    /* Nav buttons */
+    .nav-row{display:flex;gap:10px;margin-top:20px}
+    .btn{padding:11px 22px;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+    .btn-next{background:var(--primary);color:#fff;flex:1}
+    .btn-next:hover{background:var(--primary-l)}
+    .btn-back{background:var(--bg);color:var(--muted);border:1.5px solid var(--border)}
+    .btn-back:hover{background:var(--border)}
+    .btn-gen{background:linear-gradient(135deg,#0f3460,#8b5cf6);color:#fff;flex:1;font-size:.95rem}
+    .btn-gen:hover{opacity:.9}
+
+    /* Right panel */
+    .panel-tabs{display:flex;border-bottom:1px solid var(--border)}
+    .panel-tab{flex:1;padding:12px;font-size:.82rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+    .panel-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+    .panel-content{padding:20px}
+
+    .empty-state{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty-state .es-icon{font-size:2.5rem;margin-bottom:10px;opacity:.4}
+
+    /* JSON box */
+    .json-box{background:#0f1117;color:#7dd3fc;border-radius:10px;padding:14px;font-family:'Menlo','Courier New',monospace;font-size:.75rem;white-space:pre;overflow:auto;max-height:320px;line-height:1.6}
+    .copy-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:none;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+    .copy-btn.primary{background:var(--primary);color:#fff}
+    .copy-btn.secondary{background:var(--bg);color:var(--muted);border:1.5px solid var(--border)}
+    .copy-btn:hover{opacity:.85}
+    .action-row{display:flex;gap:8px;margin-bottom:12px}
+
+    /* Instructions */
+    .steps-list{counter-reset:step}
+    .step-li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .step-li:last-child{border:none}
+    .step-num{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .step-li p{font-size:.83rem;color:#1e293b}
+    .step-li code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:.78rem;font-family:monospace;color:var(--primary)}
+
+    /* Toast */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#fff;padding:11px 22px;border-radius:30px;font-size:.85rem;font-weight:600;transition:transform .3s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .toast.show{transform:translateX(-50%) translateY(0)}
   </style>
 </head>
 <body>
+<div class="topbar"><a href="/">← Tüm Uygulamalar</a></div>
 
-<div class="topbar">
-  <a href="/">← Tüm Uygulamalar</a>
+<div class="hero">
+  <div class="hero-bg"><span></span><span></span></div>
+  <h1>Gizlilik Politikası Oluşturucu</h1>
+  <p>Platformunu ve SDK'larını seç — hazır JSON'ı apps.json'a ekle, kalanı otomatik.</p>
+  <div class="step-bar" id="step-bar">
+    <div class="step-item">
+      <div class="step-circle active" id="sc-1" onclick="goTo(1)">1</div>
+      <div class="step-label active" id="sl-1">Platform</div>
+    </div>
+    <div class="step-line" id="sl-line-1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-2" onclick="goTo(2)">2</div>
+      <div class="step-label" id="sl-2">Uygulama</div>
+    </div>
+    <div class="step-line" id="sl-line-2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-3" onclick="goTo(3)">3</div>
+      <div class="step-label" id="sl-3">SDK'lar</div>
+    </div>
+    <div class="step-line" id="sl-line-3"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-4" onclick="goTo(4)">4</div>
+      <div class="step-label" id="sl-4">İletişim</div>
+    </div>
+  </div>
 </div>
 
-<header>
-  <h1>Gizlilik Politikası Oluşturucu</h1>
-  <p>Formu doldurun, hazır HTML sayfasını indirin.</p>
-</header>
-
 <div class="layout">
-
-  <!-- FORM -->
+  <!-- LEFT: Form -->
   <div class="card">
-    <h2>📝 Uygulama Bilgileri</h2>
+    <div class="card-header"><h2 id="step-title">1 / 4 — Platform Seç</h2></div>
+    <div class="card-body">
 
-    <div class="form-group">
-      <label>Uygulama Adı *</label>
-      <input type="text" id="appName" placeholder="Örnek: Özel Güvenlik Sınav Soruları" />
-    </div>
-
-    <div class="form-group">
-      <label>Uygulama Klasör Adı (URL için) *</label>
-      <input type="text" id="appSlug" placeholder="ozel-guvenlik-sinav-soruları" />
-    </div>
-
-    <div class="form-group">
-      <label>Package Name (App ID)</label>
-      <input type="text" id="appId" placeholder="com.sirket.uygulama" />
-    </div>
-
-    <div class="form-group">
-      <label>Google Play Store Linki</label>
-      <input type="text" id="playUrl" placeholder="https://play.google.com/store/apps/details?id=..." />
-    </div>
-
-    <div class="form-group">
-      <label>İletişim E-postası *</label>
-      <input type="email" id="email" placeholder="ornek@gmail.com" />
-    </div>
-
-    <div class="form-group">
-      <label>Kullanılan Hizmetler</label>
-      <div class="checkbox-group">
-        <label class="checkbox-item">
-          <input type="checkbox" id="svc_admob" checked /> AdMob
-        </label>
-        <label class="checkbox-item">
-          <input type="checkbox" id="svc_onesignal" checked /> OneSignal
-        </label>
-        <label class="checkbox-item">
-          <input type="checkbox" id="svc_premium" checked /> Premium (Play)
-        </label>
-        <label class="checkbox-item">
-          <input type="checkbox" id="svc_firebase" checked /> Firebase
-        </label>
+      <!-- STEP 1: Platform -->
+      <div class="step-panel active" id="panel-1">
+        <p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Uygulamanın hangi platformlarda yayınlandığını seç:</p>
+        <div class="plat-grid">
+          <label class="plat-opt selected" id="plat-android">
+            <input type="radio" name="platform" value="android" checked/>
+            <span class="plat-icon">🤖</span>
+            <span class="plat-name">Android</span>
+            <span class="plat-sub">Google Play</span>
+          </label>
+          <label class="plat-opt" id="plat-ios">
+            <input type="radio" name="platform" value="ios"/>
+            <span class="plat-icon">🍎</span>
+            <span class="plat-name">iOS</span>
+            <span class="plat-sub">App Store</span>
+          </label>
+          <label class="plat-opt" id="plat-both">
+            <input type="radio" name="platform" value="both"/>
+            <span class="plat-icon">📱</span>
+            <span class="plat-name">Her İkisi</span>
+            <span class="plat-sub">Android + iOS</span>
+          </label>
+        </div>
+        <div class="nav-row"><button class="btn btn-next" onclick="goTo(2)">Devam →</button></div>
       </div>
-    </div>
 
-    <button class="btn-generate" onclick="generate()">Politika Oluştur →</button>
+      <!-- STEP 2: App info -->
+      <div class="step-panel" id="panel-2">
+        <div class="form-group">
+          <label>Uygulama Adı *</label>
+          <input type="text" id="appName" placeholder="Örn: Benim Uygulamam"/>
+        </div>
+        <div class="form-group">
+          <label>URL Slug (klasör adı) *</label>
+          <input type="text" id="appSlug" placeholder="benim-uygulamam"/>
+        </div>
+        <div class="form-group">
+          <label>Package Name / Bundle ID</label>
+          <input type="text" id="appId" placeholder="com.sirket.uygulama"/>
+        </div>
+        <div class="form-group" id="play-group">
+          <label>Google Play URL</label>
+          <input type="text" id="playUrl" placeholder="https://play.google.com/store/apps/details?id=..."/>
+        </div>
+        <div class="form-group" id="store-group" style="display:none">
+          <label>App Store ID <span style="font-weight:400;color:var(--muted)">(sadece rakamlar, örn: 6504823456)</span></label>
+          <input type="text" id="appStoreId" placeholder="6504823456" pattern="[0-9]*"/>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:4px">URL otomatik oluşturulur: apps.apple.com/app/id…</p>
+        </div>
+        <div class="form-group">
+          <label>Geliştirici Adı / Şirket</label>
+          <input type="text" id="devName" placeholder="Ad Soyad veya Şirket Adı"/>
+        </div>
+        <div class="form-group">
+          <label>Uygulama İkonu (emoji)</label>
+          <input type="text" id="appIcon" placeholder="📱" maxlength="4"/>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="goTo(1)">← Geri</button>
+          <button class="btn btn-next" onclick="goTo(3)">Devam →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Services -->
+      <div class="step-panel" id="panel-3">
+        <p style="font-size:.83rem;color:var(--muted);margin-bottom:16px">Uygulamanda kullandığın SDK ve servisleri işaretle:</p>
+        <div id="svc-container"></div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="goTo(2)">← Geri</button>
+          <button class="btn btn-next" onclick="goTo(4)">Devam →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Contact -->
+      <div class="step-panel" id="panel-4">
+        <div class="form-group">
+          <label>İletişim E-postası *</label>
+          <input type="email" id="email" placeholder="ornek@gmail.com" value="avsenatercan@gmail.com"/>
+        </div>
+        <div class="form-group">
+          <label>Güncelleme Tarihi</label>
+          <input type="text" id="updated" placeholder="13 Mayıs 2026"/>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-back" onclick="goTo(3)">← Geri</button>
+          <button class="btn btn-gen" onclick="generate()">⚡ Politika Oluştur</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- OUTPUT -->
-  <div class="card">
-    <div class="output-header">
-      <h2>📄 Oluşturulan HTML</h2>
-      <div class="copy-actions">
-        <button class="btn-action btn-copy" onclick="copyCode()">Kopyala</button>
-        <button class="btn-action btn-download" onclick="downloadFile()">İndir</button>
-      </div>
+  <!-- RIGHT: Output -->
+  <div class="card" id="output-card">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-json" onclick="switchTab('json')">JSON Girdisi</div>
+      <div class="panel-tab" id="tab-html" onclick="switchTab('html')">HTML Önizleme</div>
+      <div class="panel-tab" id="tab-how" onclick="switchTab('how')">Nasıl Kullanılır?</div>
     </div>
+    <div class="panel-content">
 
-    <div id="output-placeholder" class="placeholder-msg">
-      <span>⚙️</span>
-      <p>Formu doldurup<br/>"Politika Oluştur" butonuna tıklayın.</p>
-    </div>
-    <textarea id="output-area" style="display:none;" readonly></textarea>
-    <button class="preview-btn" id="preview-btn" style="display:none;" onclick="openPreview()">
-      🔍 Önizleme (Yeni Sekmede Aç)
-    </button>
-
-    <div id="json-section" style="display:none; margin-top:20px;">
-      <div class="json-header">
-        <span class="json-label"><span class="step-badge">2. ADIM</span> apps.json'a ekle</span>
-        <button class="btn-action btn-copy" onclick="copyJson()">Kopyala</button>
+      <div id="pane-json">
+        <div class="empty-state" id="json-empty">
+          <div class="es-icon">⚙️</div>
+          <p>Formu doldurup <strong>Politika Oluştur</strong>'a basın.</p>
+        </div>
+        <div id="json-ready" style="display:none">
+          <div class="action-row">
+            <button class="copy-btn primary" onclick="copyJson()">📋 JSON Kopyala</button>
+            <button class="copy-btn secondary" onclick="copyHtml()">📄 HTML Kopyala</button>
+            <button class="copy-btn secondary" onclick="downloadHtml()">⬇ İndir</button>
+          </div>
+          <div class="json-box" id="json-out"></div>
+        </div>
       </div>
-      <div class="json-box" id="json-out"></div>
-      <p style="font-size:0.8rem; color:#888; margin-top:8px;">
-        Bu satırı <code>apps.json</code> dizisine ekleyip push'la → GitHub Actions geri kalanını otomatik yapar.
-      </p>
+
+      <div id="pane-html" style="display:none">
+        <div class="empty-state" id="html-empty">
+          <div class="es-icon">👁️</div>
+          <p>Politikayı oluşturduktan sonra önizleme burada görünür.</p>
+        </div>
+        <div id="html-ready" style="display:none">
+          <button class="copy-btn primary" style="margin-bottom:12px" onclick="openPreview()">🔍 Yeni Sekmede Aç</button>
+          <button class="copy-btn secondary" style="margin-bottom:12px" onclick="copyHtml()">📄 HTML Kopyala</button>
+        </div>
+      </div>
+
+      <div id="pane-how" style="display:none">
+        <div class="steps-list">
+          <div class="step-li"><div class="step-num">1</div><p>Formu doldurup <strong>Politika Oluştur</strong>'a tıkla.</p></div>
+          <div class="step-li"><div class="step-num">2</div><p><strong>JSON Kopyala</strong>'ya bas ve <code>apps.json</code> dosyasındaki diziye ekle.</p></div>
+          <div class="step-li"><div class="step-num">3</div><p>Değişikliği <code>git add apps.json && git commit -m "yeni uygulama" && git push</code> ile push'la.</p></div>
+          <div class="step-li"><div class="step-num">4</div><p>GitHub Actions otomatik olarak <code>yeni-slug/index.html</code> dosyasını oluşturur ve deploy eder.</p></div>
+          <div class="step-li"><div class="step-num">5</div><p>İstersen <strong>HTML İndir</strong> ile doğrudan dosyayı alıp <code>slug/index.html</code> olarak kaydet.</p></div>
+        </div>
+      </div>
+
     </div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // App slug'ı otomatik doldur
-  document.getElementById('appName').addEventListener('input', function() {
-    const slug = this.value
-      .toLowerCase()
-      .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s')
-      .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    document.getElementById('appSlug').value = slug;
+// ── Service definitions ────────────────────────────────────────────────────
+const CATS = {
+  ads:      {label:'Reklamcılık',         color:'#f59e0b', bg:'#fffbeb'},
+  analytics:{label:'Analitik',            color:'#3b82f6', bg:'#eff6ff'},
+  marketing:{label:'Pazarlama',           color:'#f97316', bg:'#fff7ed'},
+  push:     {label:'Bildirimler',         color:'#8b5cf6', bg:'#f5f3ff'},
+  auth:     {label:'Kimlik Doğrulama',    color:'#10b981', bg:'#ecfdf5'},
+  payment:  {label:'Satın Alma',          color:'#ef4444', bg:'#fef2f2'},
+  maps:     {label:'Konum',              color:'#06b6d4', bg:'#ecfeff'},
+  backend:  {label:'Backend',            color:'#6366f1', bg:'#eef2ff'},
+};
+const SVCS = [
+  {key:'admob',             cat:'ads',      icon:'📢', name:'Google AdMob',              plats:['android','ios']},
+  {key:'facebook_audience', cat:'ads',      icon:'📢', name:'Facebook Audience Network', plats:['android','ios']},
+  {key:'unity_ads',         cat:'ads',      icon:'📢', name:'Unity Ads',                 plats:['android','ios']},
+  {key:'applovin',          cat:'ads',      icon:'📢', name:'AppLovin MAX',              plats:['android','ios']},
+  {key:'ironsource',        cat:'ads',      icon:'📢', name:'ironSource (LevelPlay)',    plats:['android','ios']},
+  {key:'firebase_analytics',cat:'analytics',icon:'📊', name:'Firebase Analytics',       plats:['android','ios']},
+  {key:'firebase_crashlytics',cat:'analytics',icon:'🐛',name:'Firebase Crashlytics',   plats:['android','ios']},
+  {key:'amplitude',         cat:'analytics',icon:'📈', name:'Amplitude',                plats:['android','ios']},
+  {key:'mixpanel',          cat:'analytics',icon:'📉', name:'Mixpanel',                 plats:['android','ios']},
+  {key:'sentry',            cat:'analytics',icon:'🔍', name:'Sentry',                   plats:['android','ios']},
+  {key:'adjust',            cat:'marketing',icon:'🎯', name:'Adjust',                   plats:['android','ios']},
+  {key:'appsflyer',         cat:'marketing',icon:'🎯', name:'AppsFlyer',                plats:['android','ios']},
+  {key:'onesignal',         cat:'push',     icon:'🔔', name:'OneSignal',                plats:['android','ios']},
+  {key:'fcm',               cat:'push',     icon:'🔔', name:'Firebase Cloud Messaging', plats:['android','ios']},
+  {key:'firebase_auth',     cat:'auth',     icon:'🔑', name:'Firebase Authentication',  plats:['android','ios']},
+  {key:'google_signin',     cat:'auth',     icon:'🔑', name:'Google ile Giriş Yap',     plats:['android','ios']},
+  {key:'apple_signin',      cat:'auth',     icon:'🍎', name:'Apple ile Giriş Yap',      plats:['ios']},
+  {key:'facebook_login',    cat:'auth',     icon:'👤', name:'Facebook Login',           plats:['android','ios']},
+  {key:'play_billing',      cat:'payment',  icon:'💳', name:'Google Play Billing',      plats:['android']},
+  {key:'apple_iap',         cat:'payment',  icon:'💳', name:'Apple In-App Purchase',    plats:['ios']},
+  {key:'revenuecat',        cat:'payment',  icon:'💰', name:'RevenueCat',               plats:['android','ios']},
+  {key:'google_maps',       cat:'maps',     icon:'📍', name:'Google Maps SDK',          plats:['android','ios']},
+  {key:'supabase',          cat:'backend',  icon:'☁️', name:'Supabase',                 plats:['android','ios']},
+];
+
+// ── State ──────────────────────────────────────────────────────────────────
+var currentStep = 1;
+var generatedHtml = '';
+var generatedJson = null;
+
+// ── Init ───────────────────────────────────────────────────────────────────
+document.getElementById('updated').value = (function(){
+  var d=new Date(); var m=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();
+})();
+
+document.getElementById('appName').addEventListener('input', function(){
+  var s=this.value.toLowerCase()
+    .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  document.getElementById('appSlug').value=s;
+});
+
+document.querySelectorAll('.plat-opt').forEach(function(el){
+  el.addEventListener('click',function(){
+    document.querySelectorAll('.plat-opt').forEach(function(x){x.classList.remove('selected')});
+    el.classList.add('selected');
+    var v=el.querySelector('input').value;
+    document.getElementById('play-group').style.display=(v==='ios')?'none':'block';
+    document.getElementById('store-group').style.display=(v==='android')?'none':'block';
+    renderServices();
+  });
+});
+
+function getPlatform(){
+  var checked=document.querySelector('.plat-opt.selected input');
+  return checked?checked.value:'android';
+}
+
+function renderServices(){
+  var plat=getPlatform();
+  var container=document.getElementById('svc-container');
+  var grouped={};
+  SVCS.forEach(function(s){
+    if(plat==='both'||(plat!=='both'&&s.plats.includes(plat))){
+      (grouped[s.cat]=grouped[s.cat]||[]).push(s);
+    }
+  });
+  var html='';
+  Object.keys(grouped).forEach(function(cat){
+    var cm=CATS[cat]||{label:cat,color:'#64748b',bg:'#f8fafc'};
+    html+='<div class="cat-block"><div class="cat-title" style="color:'+cm.color+'">'+cm.label+'</div><div class="svc-grid">';
+    grouped[cat].forEach(function(s){
+      html+='<label class="svc-opt" id="opt-'+s.key+'" onclick="toggleSvc(this)">'
+        +'<input type="checkbox" id="svc-'+s.key+'" value="'+s.key+'"/>'
+        +'<span class="svc-icon">'+s.icon+'</span>'
+        +'<span class="svc-info"><span class="svc-name">'+s.name+'</span>'
+        +'<span class="svc-badge" style="background:'+cm.bg+';color:'+cm.color+'">'+cm.label+'</span></span>'
+        +'</label>';
+    });
+    html+='</div></div>';
+  });
+  container.innerHTML=html;
+}
+
+function toggleSvc(el){
+  var cb=el.querySelector('input');
+  // click toggles — cb.checked updated after click bubbles
+  setTimeout(function(){ el.classList.toggle('selected', cb.checked); }, 0);
+}
+
+renderServices();
+
+// ── Step navigation ────────────────────────────────────────────────────────
+function goTo(step){
+  if(step<1||step>4) return;
+  document.querySelectorAll('.step-panel').forEach(function(p){p.classList.remove('active')});
+  document.getElementById('panel-'+step).classList.add('active');
+  var titles=['','1 / 4 — Platform Seç','2 / 4 — Uygulama Bilgileri','3 / 4 — SDK & Servisler','4 / 4 — İletişim & Bitiş'];
+  document.getElementById('step-title').textContent=titles[step];
+  currentStep=step;
+  updateStepBar();
+}
+
+function updateStepBar(){
+  for(var i=1;i<=4;i++){
+    var circle=document.getElementById('sc-'+i);
+    var label=document.getElementById('sl-'+i);
+    circle.classList.remove('active','done');
+    label.classList.remove('active');
+    if(i<currentStep){circle.classList.add('done');circle.textContent='✓';}
+    else if(i===currentStep){circle.classList.add('active');circle.textContent=i;label.classList.add('active');}
+    else{circle.textContent=i;}
+    if(i<4){
+      var line=document.getElementById('sl-line-'+i);
+      line.classList.toggle('done',i<currentStep);
+    }
+  }
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────
+function switchTab(t){
+  ['json','html','how'].forEach(function(x){
+    document.getElementById('pane-'+x).style.display=(x===t)?'block':'none';
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+}
+
+// ── Generate ───────────────────────────────────────────────────────────────
+function generate(){
+  var name     = document.getElementById('appName').value.trim();
+  var slug     = document.getElementById('appSlug').value.trim();
+  var pkg      = document.getElementById('appId').value.trim();
+  var playUrl  = document.getElementById('playUrl').value.trim();
+  var appStoreId = (document.getElementById('appStoreId')||{}).value||'';
+  appStoreId = appStoreId.trim().replace(/\D/g,'');
+  var devName  = document.getElementById('devName').value.trim();
+  var icon     = document.getElementById('appIcon').value.trim()||'📱';
+  var email    = document.getElementById('email').value.trim();
+  var updated  = document.getElementById('updated').value.trim();
+  var plat     = getPlatform();
+
+  if(!name||!slug||!email){showToast('⚠️ Uygulama adı, slug ve e-posta zorunludur.');return;}
+
+  var services={};
+  SVCS.forEach(function(s){services[s.key]=false;});
+  document.querySelectorAll('#svc-container input[type=checkbox]').forEach(function(cb){
+    if(cb.checked) services[cb.value]=true;
   });
 
-  function today() {
-    const d = new Date();
-    const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
-                    'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-    return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-  }
+  var dateStr = updated||(new Date().getDate()+' '+(function(){var m=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];return m[new Date().getMonth()];}())+' '+new Date().getFullYear());
+  generatedJson={name,slug,packageId:pkg,platform:plat,developerName:devName,developerEmail:email,playUrl,appStoreId,appStoreUrl:'',icon,services,updated:dateStr};
 
-  function generate() {
-    const appName   = document.getElementById('appName').value.trim();
-    const appId     = document.getElementById('appId').value.trim();
-    const playUrl   = document.getElementById('playUrl').value.trim();
-    const email     = document.getElementById('email').value.trim();
-    const admob     = document.getElementById('svc_admob').checked;
-    const onesignal = document.getElementById('svc_onesignal').checked;
-    const premium   = document.getElementById('svc_premium').checked;
-    const firebase  = document.getElementById('svc_firebase').checked;
+  document.getElementById('json-empty').style.display='none';
+  document.getElementById('json-ready').style.display='block';
+  document.getElementById('json-out').textContent=JSON.stringify(generatedJson,null,2);
 
-    if (!appName || !email) {
-      showToast('⚠️ Uygulama adı ve e-posta zorunludur.');
-      return;
-    }
+  document.getElementById('html-empty').style.display='none';
+  document.getElementById('html-ready').style.display='block';
 
-    const thirdPartyCards = [
-      admob && `      <div class="third-party-card">
-        <strong>Google AdMob</strong>
-        <span>Reklam gösterimi ve reklam kişiselleştirme için cihaz ve davranış verisi toplar.</span><br/>
-        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Gizlilik Politikası →</a>
-      </div>`,
-      onesignal && `      <div class="third-party-card">
-        <strong>OneSignal</strong>
-        <span>Push bildirim gönderimi için cihaz token'ı ve bildirim etkileşim verisi toplar.</span><br/>
-        <a href="https://onesignal.com/privacy_policy" target="_blank" rel="noopener">Gizlilik Politikası →</a>
-      </div>`,
-      premium && `      <div class="third-party-card">
-        <strong>Google Play Faturalandırma</strong>
-        <span>Premium satın alma işlemleri Google Play altyapısı üzerinden güvenli şekilde gerçekleştirilir.</span><br/>
-        <a href="https://payments.google.com/payments/apis-secure/get_legal_document?ldo=0&ldt=privacynotice&ldl=tr" target="_blank" rel="noopener">Gizlilik Bildirimi →</a>
-      </div>`,
-      firebase && `      <div class="third-party-card">
-        <strong>Firebase / Google Analytics</strong>
-        <span>Uygulama kullanım istatistikleri ve çökme raporları için anonim analitik verisi toplar.</span><br/>
-        <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Gizlilik Politikası →</a>
-      </div>`,
-    ].filter(Boolean).join('\n');
+  switchTab('json');
+  showToast('✅ Politika oluşturuldu!');
+}
 
-    const admobSection = admob ? `
-  <section>
-    <h2><span class="icon">📢</span> Reklamlar (AdMob)</h2>
-    <p>Uygulamamızda Google AdMob aracılığıyla reklamlar gösterilmektedir.</p>
-    <p>Kişiselleştirilmiş reklamları devre dışı bırakmak için Android cihazınızda
-    <strong>Ayarlar → Google → Reklamlar → Reklam kişiselleştirmeyi devre dışı bırak</strong> seçeneğini kullanabilirsiniz.</p>
-  </section>` : '';
+function copyJson(){
+  if(!generatedJson){showToast('⚠️ Önce politika oluşturun.');return;}
+  navigator.clipboard.writeText(JSON.stringify(generatedJson,null,2)).then(function(){showToast('📋 JSON kopyalandı!');});
+}
+function copyHtml(){
+  showToast('⚠️ HTML, GitHub Actions tarafından oluşturulur.');
+}
+function downloadHtml(){
+  showToast('⚠️ HTML, GitHub Actions tarafından oluşturulur. JSON\'ı ekleyip push\'layın.');
+}
+function openPreview(){
+  showToast('GitHub Pages\'e push\'ladıktan sonra canlı önizleyebilirsiniz.');
+}
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
 
-    const onesignalSection = onesignal ? `
-  <section>
-    <h2><span class="icon">🔔</span> Push Bildirimler (OneSignal)</h2>
-    <p>Uygulamamız güncellemeler ve duyurular için OneSignal aracılığıyla push bildirimler gönderebilir.</p>
-    <p>Bildirim izni isteğe bağlıdır; cihazınızın <strong>Ayarlar → Uygulamalar → ${appName} → Bildirimler</strong> bölümünden kapatabilirsiniz.</p>
-  </section>` : '';
-
-    const premiumSection = premium ? `
-  <section>
-    <h2><span class="icon">💎</span> Premium Satın Alma</h2>
-    <p>Tüm ödeme işlemleri <strong>yalnızca Google Play Faturalandırma</strong> altyapısı aracılığıyla gerçekleştirilmekte olup ödeme detayları tarafımızca görülmemekte ya da depolanmamaktadır.</p>
-    <ul>
-      <li>Satın alma işlemi Google hesabınız üzerinden yönetilir.</li>
-      <li>İptal ve iade için Google Play'in standart politikaları geçerlidir.</li>
-    </ul>
-    <p>İade talebi için: <a href="https://play.google.com/store/account/subscriptions" target="_blank" rel="noopener">Google Play Aboneliklerim</a></p>
-  </section>` : '';
-
-    const appIdBlock = appId
-      ? `    <div class="highlight-box">Uygulama Kimliği: <strong>${appId}</strong></div>` : '';
-
-    const playLink = playUrl
-      ? `      <strong>Uygulama:</strong> <a href="${playUrl}" target="_blank" rel="noopener">Google Play Store'da Görüntüle</a><br/>` : '';
-
-    const html = `<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gizlilik Politikası – ${appName}</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.75; }
-    .topbar { background: #1a1a2e; padding: 12px 24px; font-size: 0.83rem; }
-    .topbar a { color: #a0b4d6; text-decoration: none; }
-    .topbar a:hover { color: #fff; }
-    header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%); color: #fff; padding: 60px 24px 48px; text-align: center; }
-    header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; }
-    header p { margin-top: 10px; font-size: 0.95rem; opacity: 0.75; }
-    .badge { display: inline-block; margin-top: 20px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 6px 18px; font-size: 0.82rem; }
-    main { max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
-    section { background: #fff; border-radius: 14px; padding: 32px 36px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    section h2 { font-size: 1.15rem; font-weight: 700; color: #0f3460; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
-    section h2 .icon { width: 32px; height: 32px; border-radius: 8px; background: #e8f0fe; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    p { margin-bottom: 12px; font-size: 0.95rem; }
-    p:last-child { margin-bottom: 0; }
-    ul { margin: 10px 0 12px 20px; font-size: 0.95rem; }
-    ul li { margin-bottom: 6px; }
-    a { color: #0f3460; font-weight: 500; }
-    a:hover { text-decoration: underline; }
-    .highlight-box { background: #f0f4ff; border-left: 4px solid #0f3460; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 14px 0; font-size: 0.93rem; }
-    .third-party-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
-    .third-party-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px; }
-    .third-party-card strong { display: block; margin-bottom: 6px; color: #0f3460; }
-    .third-party-card span { font-size: 0.84rem; color: #555; }
-    footer { text-align: center; padding: 32px 24px; font-size: 0.83rem; color: #888; }
-    footer a { color: #0f3460; }
-    @media (max-width: 500px) { section { padding: 24px 20px; } }
-  </style>
-</head>
-<body>
-
-<div class="topbar"><a href="/">← Tüm Uygulamalar</a></div>
-
-<header>
-  <h1>Gizlilik Politikası</h1>
-  <p>${appName}</p>
-  <span class="badge">Son güncelleme: ${today()}</span>
-</header>
-
-<main>
-
-  <section>
-    <h2><span class="icon">📋</span> Genel Bakış</h2>
-    <p><strong>${appName}</strong> uygulaması bu gizlilik politikası kapsamında hizmet vermektedir. Uygulamayı kullanarak bu politikayı kabul etmiş sayılırsınız.</p>
-${appIdBlock}
-  </section>
-
-  <section>
-    <h2><span class="icon">📊</span> Toplanan Veriler</h2>
-    <ul>
-      <li><strong>Cihaz bilgileri:</strong> Model, işletim sistemi sürümü, benzersiz cihaz tanımlayıcıları</li>
-      <li><strong>Kullanım verileri:</strong> Açılan ekranlar, oturum süresi, uygulama içi etkileşimler</li>${admob ? '\n      <li><strong>Reklam tanımlayıcıları:</strong> Google Reklam Kimliği (GAID)</li>' : ''}${onesignal ? '\n      <li><strong>Bildirim token\'ı:</strong> Push bildirim gönderimi için</li>' : ''}${premium ? '\n      <li><strong>Satın alma durumu:</strong> Google Play üzerinden premium abonelik bilgisi</li>' : ''}
-      <li><strong>IP adresi ve yaklaşık konum:</strong> Analitik ve reklam hedeflemesi için</li>
-    </ul>
-    <p>Uygulama; ad, soyad, e-posta veya telefon gibi kişisel kimlik bilgilerini <strong>doğrudan toplamamaktadır</strong>.</p>
-  </section>
-
-  <section>
-    <h2><span class="icon">🔗</span> Üçüncü Taraf Hizmetler</h2>
-    <div class="third-party-grid">
-${thirdPartyCards}
-    </div>
-  </section>
-${admobSection}${onesignalSection}${premiumSection}
-
-  <section>
-    <h2><span class="icon">🔒</span> Veri Güvenliği</h2>
-    <ul>
-      <li>Veriler şifreli kanallar üzerinden iletilmektedir.</li>
-      <li>Verileriniz üçüncü taraflara <strong>satılmamaktadır</strong>.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2><span class="icon">👶</span> Çocukların Gizliliği</h2>
-    <p>Uygulamamız 13 yaşın altındaki çocuklara yönelik değildir.</p>
-  </section>
-
-  <section>
-    <h2><span class="icon">🔄</span> Politika Değişiklikleri</h2>
-    <p>Bu politikayı zaman zaman güncelleyebiliriz. Değişikliklerde "Son güncelleme" tarihi revize edilecektir.</p>
-  </section>
-
-  <section>
-    <h2><span class="icon">✉️</span> İletişim</h2>
-    <div class="highlight-box">
-      <strong>E-posta:</strong> <a href="mailto:${email}">${email}</a><br/>
-${playLink}
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <p>© ${new Date().getFullYear()} ${appName}. Tüm hakları saklıdır.</p>
-</footer>
-
-</body>
-</html>`;
-
-    document.getElementById('output-placeholder').style.display = 'none';
-    const ta = document.getElementById('output-area');
-    ta.style.display = 'block';
-    ta.value = html;
-    document.getElementById('preview-btn').style.display = 'block';
-
-    // JSON entry
-    const slug = document.getElementById('appSlug').value.trim() || 'yeni-uygulama';
-    const jsonEntry = {
-      name: appName,
-      slug,
-      packageId: appId || '',
-      playUrl: playUrl || '',
-      icon: '📱',
-      email,
-      services: { admob, onesignal, premium, firebase },
-      updated: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
-    };
-    document.getElementById('json-out').textContent = JSON.stringify(jsonEntry, null, 2);
-    document.getElementById('json-section').style.display = 'block';
-
-    showToast('✅ Politika oluşturuldu!');
-  }
-
-  function copyJson() {
-    const text = document.getElementById('json-out').textContent;
-    navigator.clipboard.writeText(text).then(() => showToast('📋 JSON kopyalandı!'));
-  }
-
-  function copyCode() {
-    const ta = document.getElementById('output-area');
-    if (!ta.value) { showToast('⚠️ Önce politika oluşturun.'); return; }
-    navigator.clipboard.writeText(ta.value).then(() => showToast('📋 Kopyalandı!'));
-  }
-
-  function downloadFile() {
-    const ta = document.getElementById('output-area');
-    if (!ta.value) { showToast('⚠️ Önce politika oluşturun.'); return; }
-    const slug = document.getElementById('appSlug').value.trim() || 'gizlilik-politikasi';
-    const blob = new Blob([ta.value], { type: 'text/html' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = slug + '.html';
-    a.click();
-    showToast('⬇️ İndiriliyor...');
-  }
-
-  function openPreview() {
-    const ta = document.getElementById('output-area');
-    if (!ta.value) return;
-    const w = window.open('', '_blank');
-    w.document.write(ta.value);
-    w.document.close();
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+// GSAP entrance
+gsap.from('.hero h1',{duration:.8,y:25,opacity:0,ease:'power3.out',delay:.1});
+gsap.from('.hero p', {duration:.8,y:15,opacity:0,ease:'power3.out',delay:.3});
+gsap.from('#step-bar',{duration:.8,y:15,opacity:0,ease:'power3.out',delay:.5});
+gsap.from('.card',{duration:.6,y:20,opacity:0,ease:'power3.out',stagger:.1,delay:.4});
 </script>
-
 </body>
 </html>
