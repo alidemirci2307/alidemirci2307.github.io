@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veri Silme Talebi / Data Deletion Request</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #0f3460;
+      --primary-light: #16213e;
+      --primary-deep: #0a1628;
+      --accent: #e94560;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --border: #e2e8f0;
+      --border-focus: #0f3460;
+      --white: #ffffff;
+      --card-shadow: 0 4px 24px rgba(15, 52, 96, 0.10);
+      --input-bg: #f8fafc;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #0a1628 100%);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .topbar-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .topbar-back:hover {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+    }
+
+    .topbar-back svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .topbar-label {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    /* ── Page Header ── */
+    .page-header {
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #0a1628 100%);
+      color: #ffffff;
+      padding: 48px 24px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(233,69,96,0.15) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .page-header h1 .en {
+      display: block;
+      font-size: clamp(15px, 2.5vw, 20px);
+      font-weight: 400;
+      opacity: 0.65;
+      margin-top: 4px;
+    }
+
+    .page-header p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      max-width: 520px;
+      margin: 16px auto 0;
+      line-height: 1.65;
+    }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      padding: 0 24px 60px;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+      transform: translateY(-32px);
+    }
+
+    /* ── Card ── */
+    .form-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .form-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .form-card-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.55;
+    }
+
+    /* ── Form Fields ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    label .label-en {
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--input-bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.10);
+    }
+
+    input[type="text"].error,
+    input[type="email"].error,
+    select.error {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.10);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--text-muted);
+      pointer-events: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.6;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--accent);
+      display: none;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
+    /* ── Submit Button ── */
+    .submit-area {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .submit-note {
+      font-size: 12.5px;
+      color: var(--text-light);
+      line-height: 1.55;
+    }
+
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(15, 52, 96, 0.35);
+      transition: transform 0.18s, box-shadow 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 52, 96, 0.45);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── Success Message ── */
+    .success-message {
+      display: none;
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 20px;
+    }
+
+    .success-message.visible {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .success-icon {
+      width: 36px;
+      height: 36px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .success-icon svg {
+      width: 18px;
+      height: 18px;
+      color: #ffffff;
+    }
+
+    .success-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: 4px;
+    }
+
+    .success-text p {
+      font-size: 13.5px;
+      color: #047857;
+      line-height: 1.55;
+    }
+
+    /* ── Info Boxes ── */
+    .info-section {
+      margin-top: 24px;
+      display: grid;
+      gap: 16px;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .info-box {
+      background: var(--white);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(15, 52, 96, 0.06);
+    }
+
+    .info-box-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .info-box-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .info-box-icon.kvkk { background: rgba(15, 52, 96, 0.10); color: var(--primary); }
+    .info-box-icon.gdpr { background: rgba(16, 185, 129, 0.10); color: #059669; }
+
+    .info-box-icon svg { width: 18px; height: 18px; }
+
+    .info-box-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .info-box-title .sub {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .info-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .info-items li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .info-items li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    .info-items li strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 20px 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 560px) {
+      .form-card {
+        padding: 24px 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .submit-area {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn-submit {
+        justify-content: center;
+      }
+
+      main {
+        padding: 0 16px 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <nav class="topbar">
+    <a href="/" class="topbar-back">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Tüm Uygulamalar / All Apps
+    </a>
+    <div class="topbar-divider"></div>
+    <span class="topbar-label">Veri Talebi / Data Request</span>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-badge">
+      <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      KVKK &amp; GDPR Uyumlu / Compliant
+    </div>
+    <h1>
+      Veri Silme Talebi
+      <span class="en">Data Deletion Request</span>
+    </h1>
+    <p>
+      Kişisel verilerinizle ilgili talepte bulunmak için aşağıdaki formu doldurun.
+      Talebiniz 30 gün içinde yanıtlanacaktır.
+    </p>
+  </header>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Form Card -->
+    <div class="form-card" id="formCard">
+      <div class="form-card-title">Talep Formu / Request Form</div>
+      <div class="form-card-subtitle">
+        Tüm alanlar Türkçe ve İngilizce olarak etiketlenmiştir.
+        Yıldız (*) ile işaretli alanlar zorunludur.<br>
+        <em style="color:#94a3b8;">All fields are labeled in Turkish and English. Fields marked with (*) are required.</em>
+      </div>
+
+      <form id="deletionForm" novalidate>
+        <div class="form-grid">
+
+          <!-- Ad Soyad -->
+          <div class="form-group">
+            <label for="fullName">
+              Ad Soyad <span class="label-en">/ Full Name</span>
+              <span class="required">*</span>
+            </label>
+            <input type="text" id="fullName" name="fullName" placeholder="Adınız Soyadınız" required autocomplete="name" />
+            <span class="field-error" id="fullNameError">Bu alan zorunludur / This field is required.</span>
+          </div>
+
+          <!-- E-posta -->
+          <div class="form-group">
+            <label for="email">
+              E-posta <span class="label-en">/ Email</span>
+              <span class="required">*</span>
+            </label>
+            <input type="email" id="email" name="email" placeholder="ornek@email.com" required autocomplete="email" />
+            <span class="field-error" id="emailError">Geçerli bir e-posta giriniz / Enter a valid email.</span>
+          </div>
+
+          <!-- Uygulama -->
+          <div class="form-group">
+            <label for="appSelect">
+              Uygulama <span class="label-en">/ App</span>
+              <span class="required">*</span>
+            </label>
+            <div class="select-wrapper" id="appSelectWrapper">
+              <select id="appSelect" name="app" required>
+                <option value="">Yükleniyor... / Loading...</option>
+              </select>
+            </div>
+            <span class="field-error" id="appError">Lütfen bir uygulama seçiniz / Please select an app.</span>
+          </div>
+
+          <!-- Talep Türü -->
+          <div class="form-group">
+            <label for="requestType">
+              Talep Türü <span class="label-en">/ Request Type</span>
+              <span class="required">*</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="requestType" name="requestType" required>
+                <option value="">Seçiniz / Select</option>
+                <option value="Veri Silme / Data Deletion">Veri Silme / Data Deletion</option>
+                <option value="Veri Erişimi / Data Access">Veri Erişimi / Data Access</option>
+                <option value="Veri Düzeltme / Data Correction">Veri Düzeltme / Data Correction</option>
+                <option value="Diğer / Other">Diğer / Other</option>
+              </select>
+            </div>
+            <span class="field-error" id="requestTypeError">Lütfen bir talep türü seçiniz / Please select a request type.</span>
+          </div>
+
+          <!-- Açıklama -->
+          <div class="form-group full-width">
+            <label for="description">
+              Açıklama <span class="label-en">/ Description</span>
+              <span class="label-en">(İsteğe bağlı / Optional)</span>
+            </label>
+            <textarea id="description" name="description" placeholder="Talebinizle ilgili ek bilgi verebilirsiniz... / You may provide additional details about your request..."></textarea>
+            <span class="field-hint">Talebinizi daha hızlı işleyebilmemiz için detay vermeniz önerilir / Providing details helps us process your request faster.</span>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div class="submit-area">
+          <p class="submit-note">
+            Talebiniz <strong>avsenatercan@gmail.com</strong> adresine iletilecektir.<br>
+            <em>Your request will be sent to avsenatercan@gmail.com.</em>
+          </p>
+          <button type="submit" class="btn-submit">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Gönder / Submit
+          </button>
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+          <div class="success-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <div class="success-text">
+            <h3>Talebiniz iletildi! / Request Submitted!</h3>
+            <p>
+              E-posta uygulamanız açılacak. Lütfen mesajı gönderin.<br>
+              <em>Your email app will open. Please send the message to complete your request.</em>
+            </p>
+          </div>
+        </div>
+
+      </form>
+    </div><!-- /form-card -->
+
+    <!-- Info Boxes -->
+    <div class="info-section" id="infoSection">
+
+      <div class="info-box">
+        <div class="info-box-header">
+          <div class="info-box-icon kvkk">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+            </svg>
+          </div>
+          <div class="info-box-title">
+            KVKK Haklarınız
+            <span class="sub">Kişisel Verilerin Korunması Kanunu – Türkiye</span>
+          </div>
+        </div>
+        <ul class="info-items">
+          <li><strong>Bilgi Talep Etme:</strong> Kişisel verilerinizin işlenip işlenmediğini öğrenme hakkı.</li>
+          <li><strong>Erişim Hakkı:</strong> Verilerinizi ve nasıl kullanıldığını görme hakkı.</li>
+          <li><strong>Düzeltme Hakkı:</strong> Hatalı verilerin düzeltilmesini talep etme hakkı.</li>
+          <li><strong>Silme Hakkı:</strong> Kişisel verilerinizin silinmesini veya imha edilmesini talep etme hakkı.</li>
+          <li><strong>İtiraz Hakkı:</strong> Otomatik işleme ve veri aktarımına itiraz etme hakkı.</li>
+          <li><strong>Yanıt Süresi:</strong> Talepler <strong>30 gün</strong> içinde yanıtlanır.</li>
+        </ul>
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-header">
+          <div class="info-box-icon gdpr">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="info-box-title">
+            GDPR Rights
+            <span class="sub">General Data Protection Regulation – EU/EEA</span>
+          </div>
+        </div>
+        <ul class="info-items">
+          <li><strong>Right to Access:</strong> Obtain a copy of your personal data we hold.</li>
+          <li><strong>Right to Rectification:</strong> Request correction of inaccurate personal data.</li>
+          <li><strong>Right to Erasure:</strong> Request deletion of your personal data ("right to be forgotten").</li>
+          <li><strong>Right to Portability:</strong> Receive your data in a structured, machine-readable format.</li>
+          <li><strong>Right to Object:</strong> Object to processing of your personal data.</li>
+          <li><strong>Response Time:</strong> Requests are answered within <strong>30 days</strong>.</li>
+        </ul>
+      </div>
+
+    </div><!-- /info-section -->
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Sena Tercan Demirci &nbsp;·&nbsp;
+    <a href="/">Tüm Uygulamalar / All Apps</a> &nbsp;·&nbsp;
+    <a href="/generator/">Privacy Policy Generator</a>
+  </footer>
+
+  <script>
+    // ── Load apps from apps.json ──
+    async function loadApps() {
+      const select = document.getElementById('appSelect');
+      try {
+        const res = await fetch('../apps.json');
+        if (!res.ok) throw new Error('Network error');
+        const apps = await res.json();
+        select.innerHTML = '<option value="">Seçiniz / Select</option>';
+        apps.forEach(app => {
+          const opt = document.createElement('option');
+          opt.value = app.name;
+          opt.textContent = app.name;
+          select.appendChild(opt);
+        });
+        const otherOpt = document.createElement('option');
+        otherOpt.value = 'Diğer / Other';
+        otherOpt.textContent = 'Diğer / Other';
+        select.appendChild(otherOpt);
+      } catch (e) {
+        // Fallback: convert select to text input
+        const wrapper = document.getElementById('appSelectWrapper');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'appSelect';
+        input.name = 'app';
+        input.required = true;
+        input.placeholder = 'Uygulama adını giriniz / Enter app name';
+        wrapper.innerHTML = '';
+        wrapper.appendChild(input);
+      }
+    }
+
+    loadApps();
+
+    // ── Form Validation & Submit ──
+    document.getElementById('deletionForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      let valid = true;
+
+      const fullName    = document.getElementById('fullName');
+      const email       = document.getElementById('email');
+      const appSelect   = document.getElementById('appSelect');
+      const requestType = document.getElementById('requestType');
+
+      // Reset errors
+      ['fullName', 'email', 'appSelect', 'requestType'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('error');
+      });
+      document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
+
+      // Validate fullName
+      if (!fullName.value.trim()) {
+        fullName.classList.add('error');
+        document.getElementById('fullNameError').classList.add('visible');
+        valid = false;
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+        email.classList.add('error');
+        document.getElementById('emailError').classList.add('visible');
+        valid = false;
+      }
+
+      // Validate app
+      if (!appSelect.value) {
+        appSelect.classList.add('error');
+        document.getElementById('appError').classList.add('visible');
+        valid = false;
+      }
+
+      // Validate requestType (only if it's a select)
+      if (requestType && requestType.tagName === 'SELECT' && !requestType.value) {
+        requestType.classList.add('error');
+        document.getElementById('requestTypeError').classList.add('visible');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      // Build mailto
+      const description = document.getElementById('description').value.trim();
+      const subject = encodeURIComponent(
+        `[Veri Talebi / Data Request] ${requestType.value} – ${appSelect.value}`
+      );
+      const body = encodeURIComponent(
+        `Ad Soyad / Full Name: ${fullName.value.trim()}\n` +
+        `E-posta / Email: ${email.value.trim()}\n` +
+        `Uygulama / App: ${appSelect.value}\n` +
+        `Talep Türü / Request Type: ${requestType.value}\n` +
+        `Açıklama / Description: ${description || 'Belirtilmedi / Not specified'}\n\n` +
+        `---\n` +
+        `Bu e-posta, https://alidemirci2307.github.io/delete-request/ adresindeki form aracılığıyla gönderilmiştir.\n` +
+        `This email was sent via the data deletion request form.`
+      );
+
+      const mailtoLink = `mailto:alidemirci2307@gmail.com?subject=${subject}&body=${body}`;
+      window.location.href = mailtoLink;
+
+      // Show success
+      const successMsg = document.getElementById('successMessage');
+      successMsg.classList.add('visible');
+      gsap.from(successMsg, { opacity: 0, y: 16, duration: 0.4, ease: 'power2.out' });
+
+      // Scroll to success
+      setTimeout(() => {
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    });
+
+    // ── GSAP Entrance Animations ──
+    window.addEventListener('DOMContentLoaded', () => {
+      gsap.to('#formCard', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        delay: 0.15
+      });
+
+      gsap.to('#infoSection', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        delay: 0.35
+      });
+    });
+  </script>
+
+</body>
+</html>

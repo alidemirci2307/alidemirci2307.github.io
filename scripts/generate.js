@@ -138,6 +138,8 @@ const I18N = {
     contact_email:'E-posta:', contact_dev:'Geliştirici:', contact_play:'Google Play:', contact_store:'App Store:',
     store_play:'▶ Google Play', store_apple:' App Store',
     footer_rights:'Tüm hakları saklıdır.',
+    s_changelog:'Değişiklik Geçmişi', changelog_empty:'Henüz kayıt yok.',
+    toc_title:'İçindekiler', print_btn:'Yazdır / PDF',
   },
   en: {
     back:'← All Apps', lang_toggle:'TR', privacy_title:'Privacy Policy',
@@ -190,6 +192,8 @@ const I18N = {
     contact_email:'Email:', contact_dev:'Developer:', contact_play:'Google Play:', contact_store:'App Store:',
     store_play:'▶ Google Play', store_apple:' App Store',
     footer_rights:'All rights reserved.',
+    s_changelog:'Changelog', changelog_empty:'No entries yet.',
+    toc_title:'Contents', print_btn:'Print / PDF',
   }
 };
 
@@ -199,7 +203,7 @@ function buildPage(app) {
     name, packageId, platform = 'android',
     developerName = '', developerEmail = '',
     playUrl = '', appStoreId = '', appStoreUrl: _appStoreUrl = '',
-    icon = '📱', services = {}, updated = ''
+    icon = '📱', services = {}, updated = '', changelog = []
   } = app;
 
   // Auto-generate App Store URL from ID
@@ -222,7 +226,8 @@ function buildPage(app) {
   const hasPayment  = activeServices.some(s => s.cat === 'payment');
   const hasAuth     = activeServices.some(s => s.cat === 'auth');
   const hasMaps     = activeServices.some(s => s.cat === 'maps');
-  const hasAnalytics= activeServices.some(s => s.cat === 'analytics');
+  const hasAnalytics  = activeServices.some(s => s.cat === 'analytics');
+  const hasChangelog  = Array.isArray(changelog) && changelog.length > 0;
 
   // Build service cards (both languages)
   function svcCards(lang) {
@@ -340,6 +345,29 @@ function buildPage(app) {
       + '</section>';
   }
 
+  function changelogSection(lang) {
+    if (!hasChangelog) return '';
+    const t = I18N[lang];
+    const entries = changelog.map((entry, i) => {
+      const dateStr = entry.date || '';
+      const descTr  = entry.tr  || entry.desc || '';
+      const descEn  = entry.en  || entry.desc || '';
+      const desc    = lang === 'tr' ? descTr : descEn;
+      return '<div class="cl-entry">'
+        + '<div class="cl-dot"></div>'
+        + '<div class="cl-body">'
+        + (dateStr ? '<span class="cl-date">' + dateStr + '</span>' : '')
+        + '<p class="cl-desc">' + desc + '</p>'
+        + '</div>'
+        + '</div>';
+    }).join('\n');
+    return '<section data-aos="fade-up" id="section-changelog">'
+      + '<div class="section-icon" style="background:#f0fdf4;color:#16a34a">📋</div>'
+      + '<h2 data-i18n="s_changelog">' + t.s_changelog + '</h2>'
+      + '<div class="cl-timeline">' + entries + '</div>'
+      + '</section>';
+  }
+
   // Platform badges HTML
   const platBadgesHtml = platform === 'both'
     ? '<span class="plat-badge android" data-i18n="plat_both_a"></span><span class="plat-badge ios" data-i18n="plat_both_i"></span>'
@@ -369,6 +397,7 @@ function buildPage(app) {
     pushSection_tr: pushSection('tr'), pushSection_en: pushSection('en'),
     paymentSection_tr: paymentSection('tr'), paymentSection_en: paymentSection('en'),
     locationSection_tr: locationSection('tr'), locationSection_en: locationSection('en'),
+    changelogSection_tr: changelogSection('tr'), changelogSection_en: changelogSection('en'),
   }).replace(/<\/script>/g, '<\\/script>');
 
   return `<!DOCTYPE html>
@@ -382,9 +411,21 @@ function buildPage(app) {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--primary:#0f3460;--primary-l:#1a6bb5;--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--radius:16px}
+    :root{--primary:#0f3460;--primary-l:#1a6bb5;--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--radius:16px;--toc-w:220px}
+    body.dark{--bg:#0f172a;--surface:#1e293b;--border:#334155;--text:#f1f5f9;--muted:#94a3b8}
+    body.dark .topbar{background:#0a1628}
+    body.dark .hero{background:linear-gradient(135deg,#0a1628 0%,#0f172a 40%,#1a0a2e 100%)}
+    body.dark section{box-shadow:0 2px 16px rgba(0,0,0,.3)}
+    body.dark .svc-card-top{filter:brightness(.85)}
+    body.dark .pkg-badge{background:#1e293b}
+    body.dark .highlight-box{background:#1e293b;border-color:#3b82f6}
+    body.dark .right-item{background:#1e293b}
+    body.dark .store-btn.android{background:#1e40af}
+    body.dark .store-btn.ios{background:#312e81}
+    body.dark #toc{background:var(--surface);border-color:var(--border)}
+    body.dark .toc-item.active{background:#1e3a5f;color:#93c5fd}
     html{scroll-behavior:smooth}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;transition:background .3s,color .3s}
     #progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899);z-index:1000;transition:width .1s linear}
     .topbar{background:#0f3460;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
     .topbar a{color:#93c5fd;text-decoration:none;font-size:.82rem;display:inline-flex;align-items:center;gap:5px;transition:color .2s}
@@ -453,6 +494,38 @@ function buildPage(app) {
     #btt:hover{background:var(--primary-l)}
     footer{text-align:center;padding:32px 24px;font-size:.82rem;color:var(--muted);border-top:1px solid var(--border)}
     footer a{color:var(--primary)}
+    /* ── Dark mode toggle ── */
+    .dark-btn{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);width:32px;height:32px;border-radius:50%;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
+    .dark-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+    /* ── Print button ── */
+    .print-btn{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);padding:4px 11px;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+    .print-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+    /* ── ToC ── */
+    #toc{position:fixed;top:50%;right:20px;transform:translateY(-50%);width:var(--toc-w);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 0;box-shadow:0 4px 20px rgba(0,0,0,.1);z-index:90;max-height:70vh;overflow-y:auto;opacity:0;pointer-events:none;transition:opacity .3s}
+    #toc.toc-show{opacity:1;pointer-events:auto}
+    .toc-head{font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:0 16px 8px;border-bottom:1px solid var(--border);margin-bottom:6px}
+    .toc-item{display:block;padding:6px 16px;font-size:.78rem;color:var(--muted);text-decoration:none;border-left:2px solid transparent;transition:all .15s;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toc-item:hover{color:var(--primary);border-left-color:var(--primary);background:#f8fafc}
+    .toc-item.active{color:var(--primary);border-left-color:var(--primary);background:#eff6ff;font-weight:600}
+    body.dark .toc-item:hover{background:#1e293b}
+    @media(max-width:1200px){#toc{display:none}}
+    /* ── Changelog ── */
+    .cl-timeline{margin-top:16px;padding-left:20px;border-left:2px solid var(--border);display:flex;flex-direction:column;gap:20px}
+    .cl-entry{position:relative}
+    .cl-dot{width:10px;height:10px;background:var(--primary);border-radius:50%;position:absolute;left:-26px;top:5px;border:2px solid var(--surface)}
+    .cl-date{font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:4px}
+    .cl-desc{font-size:.93rem;color:var(--text);margin:0}
+    /* ── Print ── */
+    @media print{
+      #progress,#btt,#toc,.topbar,.lang-switcher,.dark-btn,.print-btn,.store-links,.hero-bg,section:hover{display:none!important}
+      body{background:#fff;color:#000}
+      .hero{background:#0f3460!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      main{padding:20px 0}
+      section{opacity:1!important;transform:none!important;box-shadow:none;border:1px solid #e2e8f0;break-inside:avoid;margin-bottom:12px}
+      .svc-card{opacity:1!important;transform:none!important}
+      a[href]:after{content:" (" attr(href) ")";font-size:.75rem;color:#475569}
+      a.store-btn:after,a.svc-link:after{content:none}
+    }
     @media(max-width:600px){section{padding:24px 18px}.hero{padding:56px 20px 44px}}
   </style>
 </head>
@@ -461,9 +534,13 @@ function buildPage(app) {
 
 <div class="topbar">
   <a href="/" id="topbar-back" data-i18n="back">← Tüm Uygulamalar</a>
-  <div class="lang-switcher">
-    <button class="lang-btn active" data-lang="tr" onclick="setLang('tr')">TR</button>
-    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="print-btn" onclick="window.print()" id="print-btn" data-i18n="print_btn" title="Yazdır / Print">🖨 Yazdır</button>
+    <button class="dark-btn" id="dark-btn" onclick="toggleDark()" title="Dark mode">🌙</button>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="tr" onclick="setLang('tr')">TR</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
   </div>
 </div>
 
@@ -480,9 +557,13 @@ function buildPage(app) {
   </div>
 </div>
 
+<nav id="toc" aria-label="İçindekiler">
+  <div class="toc-head" data-i18n="toc_title">İçindekiler</div>
+</nav>
+
 <main>
 
-  <section>
+  <section id="section-overview">
     <div class="section-icon" style="background:#eff6ff;color:#3b82f6">📋</div>
     <h2 data-i18n="s_overview">Genel Bakış</h2>
     <p><strong>${name}</strong> <span data-i18n="overview_p">uygulaması bu gizlilik politikası kapsamında hizmet vermektedir. Uygulamayı kullanarak bu politikayı kabul etmiş sayılırsınız.</span></p>
@@ -491,7 +572,7 @@ function buildPage(app) {
     ${storeLinks ? '<div class="store-links">' + storeLinks + '</div>' : ''}
   </section>
 
-  <section>
+  <section id="section-data">
     <div class="section-icon" style="background:#f0fdf4;color:#16a34a">📊</div>
     <h2 data-i18n="s_data">Toplanan Veriler</h2>
     <p data-i18n="data_intro">Uygulamamız aşağıdaki verileri toplayabilir:</p>
@@ -501,7 +582,7 @@ function buildPage(app) {
     <p data-i18n="data_no_pii">Uygulama; ad, soyad, T.C. kimlik numarası, kredi kartı gibi hassas kişisel bilgileri doğrudan toplamamaktadır.</p>
   </section>
 
-  <section>
+  <section id="section-third">
     <div class="section-icon" style="background:#f5f3ff;color:#7c3aed">🔗</div>
     <h2 data-i18n="s_third">Üçüncü Taraf Hizmetler</h2>
     <p data-i18n="third_intro">Uygulamamız aşağıdaki üçüncü taraf SDK'larını kullanmaktadır. Her biri kendi gizlilik politikası kapsamında veri işleyebilir:</p>
@@ -516,9 +597,10 @@ function buildPage(app) {
     ${pushSection('tr')}
     ${paymentSection('tr')}
     ${locationSection('tr')}
+    ${changelogSection('tr')}
   </div>
 
-  <section>
+  <section id="section-security">
     <div class="section-icon" style="background:#fef2f2;color:#dc2626">🔒</div>
     <h2 data-i18n="s_security">Veri Güvenliği</h2>
     <ul id="security-list">
@@ -526,13 +608,13 @@ function buildPage(app) {
     </ul>
   </section>
 
-  <section>
+  <section id="section-children">
     <div class="section-icon" style="background:#f0fdf4;color:#15803d">👶</div>
     <h2 data-i18n="s_children">Çocukların Gizliliği</h2>
     <p data-i18n="children_p">${I18N.tr.children_p}</p>
   </section>
 
-  <section>
+  <section id="section-rights">
     <div class="section-icon" style="background:#fffbeb;color:#d97706">⚖️</div>
     <h2 data-i18n="s_rights">Haklarınız (KVKK / GDPR)</h2>
     <div class="rights-grid" id="rights-grid">
@@ -540,13 +622,13 @@ function buildPage(app) {
     </div>
   </section>
 
-  <section>
+  <section id="section-changes">
     <div class="section-icon" style="background:#f1f5f9;color:#475569">🔄</div>
     <h2 data-i18n="s_changes">Politika Değişiklikleri</h2>
     <p data-i18n="changes_p">${I18N.tr.changes_p}</p>
   </section>
 
-  <section>
+  <section id="section-contact">
     <div class="section-icon" style="background:#eff6ff;color:#2563eb">✉️</div>
     <h2 data-i18n="s_contact">İletişim</h2>
     <p data-i18n="contact_p">Bu gizlilik politikasına ilişkin soru, şikayet veya talepleriniz için:</p>
@@ -592,7 +674,7 @@ function setLang(l) {
   document.getElementById('dynamic-sections').innerHTML =
     DYN['adsSection_' + l] + DYN['attSection_' + l] +
     DYN['pushSection_' + l] + DYN['paymentSection_' + l] +
-    DYN['locationSection_' + l];
+    DYN['locationSection_' + l] + DYN['changelogSection_' + l];
 
   // Security list
   var secList = document.getElementById('security-list');
@@ -654,6 +736,75 @@ document.querySelectorAll('.svc-card').forEach(function(el, i) {
 
 // Init language
 setLang(currentLang);
+
+// ── Dark mode ──
+function toggleDark() {
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('pp_dark', isDark ? '1' : '0');
+  document.getElementById('dark-btn').textContent = isDark ? '☀️' : '🌙';
+}
+(function(){
+  var saved = localStorage.getItem('pp_dark');
+  if (saved === '1' || (saved === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    var btn = document.getElementById('dark-btn');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ── Floating ToC ──
+(function buildToc() {
+  var toc = document.getElementById('toc');
+  if (!toc) return;
+  var sections = document.querySelectorAll('section[id], div[id="dynamic-sections"] section[id]');
+  var allSections = document.querySelectorAll('main section[id], #dynamic-sections section[id]');
+  // collect from main
+  var items = [];
+  document.querySelectorAll('main section[id]').forEach(function(sec) {
+    var h2 = sec.querySelector('h2');
+    if (h2) items.push({ id: sec.id, text: h2.textContent.trim() });
+  });
+  document.querySelectorAll('#dynamic-sections section[id]').forEach(function(sec) {
+    var h2 = sec.querySelector('h2');
+    if (h2) items.push({ id: sec.id, text: h2.textContent.trim() });
+  });
+  if (items.length < 2) return;
+  items.forEach(function(item) {
+    var a = document.createElement('a');
+    a.className = 'toc-item';
+    a.setAttribute('data-toc', item.id);
+    a.textContent = item.text;
+    a.onclick = function() { document.getElementById(item.id) && document.getElementById(item.id).scrollIntoView({behavior:'smooth'}); };
+    toc.appendChild(a);
+  });
+  toc.classList.add('toc-show');
+
+  var tocObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.toc-item').forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('data-toc') === e.target.id);
+        });
+      }
+    });
+  }, { threshold: 0.35, rootMargin: '-80px 0px -60% 0px' });
+
+  document.querySelectorAll('main section[id], #dynamic-sections section[id]').forEach(function(sec) {
+    tocObserver.observe(sec);
+  });
+
+  // Update ToC text on lang switch (re-read h2 content after setLang)
+  var origSetLang = window.setLang;
+  window.setLang = function(l) {
+    origSetLang(l);
+    document.querySelectorAll('.toc-item[data-toc]').forEach(function(a) {
+      var sec = document.getElementById(a.getAttribute('data-toc'));
+      if (sec) { var h2 = sec.querySelector('h2'); if (h2) a.textContent = h2.textContent.trim(); }
+    });
+    var head = toc.querySelector('.toc-head');
+    if (head) head.textContent = I18N[l].toc_title || (l === 'tr' ? 'İçindekiler' : 'Contents');
+  };
+})();
 </script>
 </body>
 </html>`;
@@ -667,4 +818,36 @@ for (const app of apps) {
   fs.writeFileSync(path.join(dir, 'index.html'), buildPage(app), 'utf8');
   console.log('✅ ' + app.slug + '/index.html');
 }
+
+// ── Sitemap ───────────────────────────────────────────────────────────────────
+const BASE_URL = 'https://alidemirci2307.github.io';
+const today = new Date().toISOString().split('T')[0];
+
+const staticPages = [
+  { loc: BASE_URL + '/',                  priority: '1.0', changefreq: 'weekly'  },
+  { loc: BASE_URL + '/generator/',        priority: '0.8', changefreq: 'monthly' },
+  { loc: BASE_URL + '/delete-request/',   priority: '0.6', changefreq: 'monthly' },
+  { loc: BASE_URL + '/qr/',               priority: '0.5', changefreq: 'monthly' },
+];
+
+const appPages = apps.map(app => ({
+  loc: BASE_URL + '/' + app.slug + '/',
+  priority: '0.9',
+  changefreq: 'monthly',
+}));
+
+const allUrls = [...staticPages, ...appPages];
+
+const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls.map(u => `  <url>
+    <loc>${u.loc}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+fs.writeFileSync(path.join(__dirname, '../sitemap.xml'), sitemapXml, 'utf8');
+console.log('✅ sitemap.xml (' + allUrls.length + ' URL)');
 console.log('\n' + apps.length + ' sayfa oluşturuldu.');

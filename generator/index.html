@@ -117,6 +117,12 @@
     .step-li p{font-size:.83rem;color:#1e293b}
     .step-li code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:.78rem;font-family:monospace;color:var(--primary)}
 
+    /* Preview iframe */
+    .preview-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);height:480px}
+    .preview-wrap iframe{width:100%;height:100%;border:none;display:block}
+    .preview-actions{display:flex;gap:8px;margin-bottom:12px}
+    .preview-live-badge{display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#059669;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #6ee7b7;margin-bottom:10px}
+
     /* Toast */
     .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#fff;padding:11px 22px;border-radius:30px;font-size:.85rem;font-weight:600;transition:transform .3s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.3)}
     .toast.show{transform:translateX(-50%) translateY(0)}
@@ -275,13 +281,13 @@
       </div>
 
       <div id="pane-html" style="display:none">
-        <div class="empty-state" id="html-empty">
-          <div class="es-icon">👁️</div>
-          <p>Politikayı oluşturduktan sonra önizleme burada görünür.</p>
+        <div class="preview-live-badge">🔴 Canlı Önizleme</div>
+        <div class="preview-actions">
+          <button class="copy-btn primary" onclick="openPreview()">🔍 Yeni Sekmede Aç</button>
+          <button class="copy-btn secondary" onclick="refreshPreview()">↺ Yenile</button>
         </div>
-        <div id="html-ready" style="display:none">
-          <button class="copy-btn primary" style="margin-bottom:12px" onclick="openPreview()">🔍 Yeni Sekmede Aç</button>
-          <button class="copy-btn secondary" style="margin-bottom:12px" onclick="copyHtml()">📄 HTML Kopyala</button>
+        <div class="preview-wrap">
+          <iframe id="preview-frame" title="Policy Preview"></iframe>
         </div>
       </div>
 
@@ -440,6 +446,7 @@ function switchTab(t){
     document.getElementById('pane-'+x).style.display=(x===t)?'block':'none';
     document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
+  if (t === 'html') refreshPreview();
 }
 
 // ── Generate ───────────────────────────────────────────────────────────────
@@ -471,11 +478,83 @@ function generate(){
   document.getElementById('json-ready').style.display='block';
   document.getElementById('json-out').textContent=JSON.stringify(generatedJson,null,2);
 
-  document.getElementById('html-empty').style.display='none';
-  document.getElementById('html-ready').style.display='block';
-
+  refreshPreview();
   switchTab('json');
   showToast('✅ Politika oluşturuldu!');
+}
+
+// ── Live Preview ───────────────────────────────────────────────────────────
+var previewBlobUrl = null;
+
+function buildPreviewHtml() {
+  var name    = document.getElementById('appName').value.trim()   || 'Uygulama Adı';
+  var icon    = document.getElementById('appIcon').value.trim()   || '📱';
+  var pkg     = document.getElementById('appId').value.trim()     || '';
+  var devName = document.getElementById('devName').value.trim()   || '';
+  var email   = document.getElementById('email').value.trim()     || '';
+  var updated = document.getElementById('updated').value.trim()   || '';
+  var plat    = getPlatform();
+
+  var platLabel = plat === 'ios' ? 'iOS / App Store' : plat === 'both' ? 'Android · iOS' : 'Android / Google Play';
+  var platColor = plat === 'ios' ? '#1d4ed8' : '#15803d';
+  var platBg    = plat === 'ios' ? '#dbeafe' : '#dcfce7';
+
+  var selectedSvcs = [];
+  document.querySelectorAll('#svc-container input[type=checkbox]:checked').forEach(function(cb){
+    var svc = SVCS.find(function(s){ return s.key === cb.value; });
+    if (svc) selectedSvcs.push(svc);
+  });
+
+  var svcRows = selectedSvcs.map(function(svc){
+    var cm = CATS[svc.cat]||{color:'#64748b',bg:'#f8fafc',label:svc.cat};
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:7px">'
+      +'<span style="font-size:1.2rem">'+ svc.icon +'</span>'
+      +'<div style="flex:1"><strong style="font-size:.85rem;color:#1e293b">'+ svc.name +'</strong></div>'
+      +'<span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;background:'+ cm.bg +';color:'+ cm.color +'">'+ cm.label +'</span>'
+      +'</div>';
+  }).join('') || '<p style="color:#94a3b8;font-size:.85rem">Henüz SDK seçilmedi.</p>';
+
+  var sections = [
+    {icon:'📋',title:'Genel Bakış / Overview',body:'<strong>'+name+'</strong> uygulaması bu gizlilik politikası kapsamında hizmet vermektedir.'+(pkg?'<br/><br/><code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:.78rem">'+pkg+'</code>':'')},
+    {icon:'📊',title:'Toplanan Veriler / Data We Collect',body:'Cihaz bilgileri, kullanım verileri'+(selectedSvcs.some(s=>s.cat==='ads')?', reklam tanımlayıcıları':'')+(selectedSvcs.some(s=>s.cat==='push')?', bildirim token\'ı':'')+(selectedSvcs.some(s=>s.cat==='maps')?', konum verisi':'')+'<br/>Hassas kişisel bilgiler (TCKN, kredi kartı) toplanmaz.'},
+    {icon:'🔗',title:'Üçüncü Taraf Hizmetler / Third-Party Services',body:svcRows},
+    {icon:'🔒',title:'Veri Güvenliği / Data Security',body:'Veriler şifreli (TLS/HTTPS) kanallar üzerinden iletilir. Üçüncü taraflara satılmaz.'},
+    {icon:'⚖️',title:'Haklarınız / Your Rights (KVKK / GDPR)',body:'Verilerinize erişim, düzeltme, silme ve itiraz haklarına sahipsiniz. Talepler 30 gün içinde yanıtlanır.'},
+    {icon:'✉️',title:'İletişim / Contact'+(devName?' — '+devName:''),body:(email?'<a href="mailto:'+email+'" style="color:#0f3460">'+email+'</a>':'')},
+  ];
+
+  var sectionsHtml = sections.map(function(s){
+    return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:22px 24px;margin-bottom:14px">'
+      +'<div style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#eff6ff;font-size:1.1rem;margin-bottom:10px">'+s.icon+'</div>'
+      +'<h2 style="font-size:.95rem;font-weight:700;color:#0f3460;margin-bottom:10px">'+s.title+'</h2>'
+      +'<div style="font-size:.88rem;color:#475569;line-height:1.7">'+s.body+'</div>'
+      +'</div>';
+  }).join('');
+
+  return '<!DOCTYPE html><html lang="tr"><head>'
+    +'<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    +'<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:#f8fafc;color:#1e293b}'
+    +'a{color:#0f3460}.hero{background:linear-gradient(135deg,#0f3460,#16213e);color:#fff;padding:36px 24px;text-align:center}'
+    +'main{max-width:720px;margin:0 auto;padding:28px 20px 48px}</style></head><body>'
+    +'<div class="hero">'
+    +'<div style="font-size:2.8rem;margin-bottom:10px">'+icon+'</div>'
+    +'<h1 style="font-size:1.5rem;font-weight:800">Gizlilik Politikası</h1>'
+    +'<p style="opacity:.75;margin-top:6px;font-size:.9rem">'+name+'</p>'
+    +'<div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'
+    +'<span style="background:'+platBg+';color:'+platColor+';padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700">'+platLabel+'</span>'
+    +(updated?'<span style="background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);padding:4px 12px;border-radius:20px;font-size:.75rem">Son güncelleme: '+updated+'</span>':'')
+    +'</div></div>'
+    +'<main>'+sectionsHtml+'<p style="text-align:center;font-size:.75rem;color:#94a3b8;margin-top:24px">Bu bir önizlemedir. Gerçek sayfa GitHub Actions ile oluşturulur.</p></main>'
+    +'</body></html>';
+}
+
+function refreshPreview() {
+  var html = buildPreviewHtml();
+  var blob = new Blob([html], {type:'text/html'});
+  if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+  previewBlobUrl = URL.createObjectURL(blob);
+  document.getElementById('preview-frame').src = previewBlobUrl;
 }
 
 function copyJson(){
@@ -483,19 +562,44 @@ function copyJson(){
   navigator.clipboard.writeText(JSON.stringify(generatedJson,null,2)).then(function(){showToast('📋 JSON kopyalandı!');});
 }
 function copyHtml(){
-  showToast('⚠️ HTML, GitHub Actions tarafından oluşturulur.');
+  if (!generatedJson) { showToast('⚠️ Önce politika oluşturun.'); return; }
+  navigator.clipboard.writeText(buildPreviewHtml()).then(function(){ showToast('📄 HTML önizleme kopyalandı!'); });
 }
 function downloadHtml(){
-  showToast('⚠️ HTML, GitHub Actions tarafından oluşturulur. JSON\'ı ekleyip push\'layın.');
+  showToast('⚠️ JSON\'ı apps.json\'a ekleyip push\'layın — GitHub Actions gerçek HTML\'i oluşturur.');
 }
 function openPreview(){
-  showToast('GitHub Pages\'e push\'ladıktan sonra canlı önizleyebilirsiniz.');
+  var html = buildPreviewHtml();
+  var blob = new Blob([html], {type:'text/html'});
+  window.open(URL.createObjectURL(blob), '_blank');
 }
 function showToast(msg){
   var t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(function(){t.classList.remove('show');},2800);
 }
+
+// Auto-refresh preview when HTML tab is active and form changes
+var previewDebounce = null;
+function schedulePreviewRefresh(){
+  if (document.getElementById('tab-html').classList.contains('active')) {
+    clearTimeout(previewDebounce);
+    previewDebounce = setTimeout(refreshPreview, 500);
+  }
+}
+['appName','appIcon','appId','devName','email','updated'].forEach(function(id){
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('input', schedulePreviewRefresh);
+});
+document.querySelectorAll('.plat-opt').forEach(function(el){
+  el.addEventListener('click', function(){ setTimeout(schedulePreviewRefresh, 50); });
+});
+document.addEventListener('change', function(e){
+  if (e.target.type === 'checkbox') setTimeout(schedulePreviewRefresh, 50);
+});
+
+// Initial preview load
+refreshPreview();
 
 // GSAP entrance
 gsap.from('.hero h1',{duration:.8,y:25,opacity:0,ease:'power3.out',delay:.1});
