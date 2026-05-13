@@ -163,7 +163,7 @@ document.querySelectorAll('.filter-tab').forEach(btn=>{
   });
 });
 
-fetch('/apps.json').then(r=>r.json()).then(apps=>{
+fetch('./apps.json').then(r=>r.json()).then(apps=>{
   allApps = apps;
   renderGrid(apps);
   // Stats
