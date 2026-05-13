@@ -1,6 +1,6 @@
 [
   {
-    "name": "Özel Güvenlik Sınav Soruları",
+    "name": "Ãzel GÃ¼venlik SÄ±nav SorularÄ±",
     "slug": "ozel-guvenlik-sinav-sorulari",
     "packageId": "ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari",
     "platform": "android",
@@ -8,7 +8,7 @@
     "developerEmail": "avsenatercan@gmail.com",
     "playUrl": "https://play.google.com/store/apps/details?id=ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari&hl=tr",
     "appStoreId": "",
-    "icon": "🛡️",
+    "icon": "ð¡ï¸",
     "services": {
       "admob": true,
       "onesignal": true,
@@ -34,9 +34,51 @@
       "supabase": false,
       "fcm": false
     },
-    "updated": "14 Mayıs 2026 / May 14, 2026",
+    "updated": "14 MayÄ±s 2026 / May 14, 2026",
     "changelog": [
-      { "date": "Mayıs 2026 / May 2026", "tr": "İlk gizlilik politikası yayınlandı.", "en": "Initial privacy policy published." }
+      {
+        "date": "MayÄ±s 2026 / May 2026",
+        "tr": "Ä°lk gizlilik politikasÄ± yayÄ±nlandÄ±.",
+        "en": "Initial privacy policy published."
+      }
     ]
+  },
+  {
+    "name": "Ehliyet Sınav Soruları 2026",
+    "slug": "ehliyet-sinav-sorulari-2026",
+    "packageId": "com.demirci.ehliyetsinavi",
+    "platform": "android",
+    "developerName": "Ali Demirci",
+    "developerEmail": "alidemirci2307@gmail.com",
+    "playUrl": "",
+    "appStoreId": "",
+    "appStoreUrl": "",
+    "icon": "📱",
+    "services": {
+      "admob": true,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "firebase_analytics": false,
+      "firebase_crashlytics": true,
+      "amplitude": false,
+      "mixpanel": false,
+      "sentry": false,
+      "adjust": false,
+      "appsflyer": false,
+      "onesignal": true,
+      "fcm": false,
+      "firebase_auth": false,
+      "google_signin": false,
+      "apple_signin": false,
+      "facebook_login": false,
+      "play_billing": true,
+      "apple_iap": false,
+      "revenuecat": false,
+      "google_maps": false,
+      "supabase": true
+    },
+    "updated": "13 Mayıs 2026"
   }
 ]
