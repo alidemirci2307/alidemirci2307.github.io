@@ -152,6 +152,24 @@
     /* Toast */
     .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#fff;padding:11px 22px;border-radius:30px;font-size:.85rem;font-weight:600;transition:transform .3s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.3)}
     .toast.show{transform:translateX(-50%) translateY(0)}
+
+    /* Manage pane */
+    .manage-app-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;transition:border-color .2s,background .2s}
+    .manage-app-item:hover{border-color:var(--primary-l);background:#f8fafc}
+    .manage-app-icon{font-size:1.4rem;flex-shrink:0;width:32px;text-align:center}
+    .manage-app-info{flex:1;min-width:0}
+    .manage-app-name{font-weight:700;font-size:.88rem;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .manage-app-slug{font-size:.72rem;color:var(--muted);margin-top:2px}
+    .manage-app-actions{display:flex;gap:6px;flex-shrink:0}
+    .mng-btn{padding:6px 10px;border-radius:7px;border:none;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+    .mng-btn.edit{background:#eff6ff;color:#1d4ed8}
+    .mng-btn.edit:hover{background:#dbeafe}
+    .mng-btn.del{background:#fef2f2;color:#dc2626}
+    .mng-btn.del:hover{background:#fee2e2}
+    .edit-banner{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:.82rem;color:#92400e;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+    .edit-cancel-btn{background:#f59e0b;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0}
+    .edit-cancel-btn:hover{background:#d97706}
+    .manage-top-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
   </style>
 </head>
 <body>
@@ -192,6 +210,12 @@
   <div class="card">
     <div class="card-header"><h2 id="step-title">1 / 4 — Platform Seç</h2></div>
     <div class="card-body">
+
+      <!-- Edit mode banner -->
+      <div class="edit-banner" id="edit-banner" style="display:none">
+        <span>✏️ Düzenleme modu: <strong id="edit-banner-name"></strong></span>
+        <button class="edit-cancel-btn" onclick="cancelEdit()">✕ İptal</button>
+      </div>
 
       <!-- STEP 1: Platform -->
       <div class="step-panel active" id="panel-1">
@@ -291,6 +315,7 @@
       <div class="panel-tab active" id="tab-json" onclick="switchTab('json')">JSON Girdisi</div>
       <div class="panel-tab" id="tab-html" onclick="switchTab('html')">HTML Önizleme</div>
       <div class="panel-tab" id="tab-how" onclick="switchTab('how')">Nasıl Kullanılır?</div>
+      <div class="panel-tab" id="tab-manage" onclick="switchTab('manage')">⚙ Yönet</div>
     </div>
     <div class="panel-content">
 
@@ -333,6 +358,14 @@
           <div class="step-li"><div class="step-num">4</div><p>GitHub Actions otomatik olarak <code>yeni-slug/index.html</code> dosyasını oluşturur ve deploy eder.</p></div>
           <div class="step-li"><div class="step-num">5</div><p>İstersen <strong>HTML İndir</strong> ile doğrudan dosyayı alıp <code>slug/index.html</code> olarak kaydet.</p></div>
         </div>
+      </div>
+
+      <div id="pane-manage" style="display:none">
+        <div class="manage-top-row">
+          <button class="copy-btn primary" onclick="loadManagePane()" style="flex:1">🔄 Uygulamaları Getir</button>
+        </div>
+        <div class="gh-status" id="manage-status" style="text-align:left;margin-bottom:10px"></div>
+        <div id="manage-list"></div>
       </div>
 
     </div>
@@ -405,6 +438,8 @@ const SVCS = [
 var currentStep = 1;
 var generatedHtml = '';
 var generatedJson = null;
+var editingSlug   = null;
+var manageApps    = [];
 
 // ── Init ───────────────────────────────────────────────────────────────────
 document.getElementById('updated').value = (function(){
@@ -486,7 +521,11 @@ function goTo(step){
   document.querySelectorAll('.step-panel').forEach(function(p){p.classList.remove('active')});
   document.getElementById('panel-'+step).classList.add('active');
   var titles=['','1 / 4 — Platform Seç','2 / 4 — Uygulama Bilgileri','3 / 4 — SDK & Servisler','4 / 4 — İletişim & Bitiş'];
-  document.getElementById('step-title').textContent=titles[step];
+  if(editingSlug){
+    document.getElementById('step-title').textContent='✏️ Düzenleme — '+step+'/4';
+  } else {
+    document.getElementById('step-title').textContent=titles[step];
+  }
   currentStep=step;
   updateStepBar();
 }
@@ -509,7 +548,7 @@ function updateStepBar(){
 
 // ── Tab switching ──────────────────────────────────────────────────────────
 function switchTab(t){
-  ['json','html','how'].forEach(function(x){
+  ['json','html','how','manage'].forEach(function(x){
     document.getElementById('pane-'+x).style.display=(x===t)?'block':'none';
     document.getElementById('tab-'+x).classList.toggle('active',x===t);
   });
@@ -548,7 +587,7 @@ function generate(){
   refreshPreview();
   updateGhBtn();
   switchTab('json');
-  showToast('✅ Politika oluşturuldu!');
+  showToast(editingSlug ? '✏️ Düzenleme hazır — GitHub\'a Gönder\'e bas.' : '✅ Politika oluşturuldu!');
 }
 
 // ── Live Preview ───────────────────────────────────────────────────────────
@@ -708,26 +747,37 @@ async function pushToGitHub(){
     var decoded = new TextDecoder('utf-8').decode(Uint8Array.from(atob(rawBase64), function(c){ return c.charCodeAt(0); }));
     var currentContent = JSON.parse(decoded);
 
-    // 2. Check for duplicate slug
-    if (currentContent.some(function(a){ return a.slug === generatedJson.slug; })) {
-      throw new Error('Bu slug zaten mevcut: "' + generatedJson.slug + '". Farklı bir URL slug kullanın.');
+    // 2. Add or update entry
+    var wasEditing = editingSlug;
+    if (editingSlug) {
+      var editIdx = -1;
+      for (var i = 0; i < currentContent.length; i++) {
+        if (currentContent[i].slug === editingSlug) { editIdx = i; break; }
+      }
+      if (editIdx === -1) throw new Error('Düzenlenecek kayıt bulunamadı: "' + editingSlug + '"');
+      var slugConflict = currentContent.some(function(a, j){ return a.slug === generatedJson.slug && j !== editIdx; });
+      if (slugConflict) throw new Error('Bu slug başka bir uygulamada zaten mevcut: "' + generatedJson.slug + '"');
+      currentContent[editIdx] = generatedJson;
+    } else {
+      if (currentContent.some(function(a){ return a.slug === generatedJson.slug; })) {
+        throw new Error('Bu slug zaten mevcut: "' + generatedJson.slug + '". Farklı bir URL slug kullanın.');
+      }
+      currentContent.push(generatedJson);
     }
 
-    // 3. Append and encode
-    currentContent.push(generatedJson);
+    // 3. Encode
     var jsonStr = JSON.stringify(currentContent, null, 2) + '\n';
     var utf8Bytes = new TextEncoder().encode(jsonStr);
     var newContent = btoa(String.fromCharCode.apply(null, utf8Bytes));
 
     // 4. Commit
+    var commitMsg = wasEditing
+      ? 'fix: ' + generatedJson.name + ' gizlilik politikası güncellendi'
+      : 'feat: ' + generatedJson.name + ' gizlilik politikası eklendi';
     var putRes = await fetch(apiBase, {
       method: 'PUT',
       headers: headers,
-      body: JSON.stringify({
-        message: 'feat: ' + generatedJson.name + ' gizlilik politikası eklendi',
-        content: newContent,
-        sha: fileData.sha
-      })
+      body: JSON.stringify({ message: commitMsg, content: newContent, sha: fileData.sha })
     });
     if (!putRes.ok) {
       var err = await putRes.json();
@@ -735,10 +785,11 @@ async function pushToGitHub(){
     }
 
     // 5. Success
-    btn.innerHTML = '✅ GitHub\'a Gönderildi!';
+    hideEditBanner();
+    btn.innerHTML = wasEditing ? '✅ Güncellendi!' : '✅ GitHub\'a Gönderildi!';
     btn.className = 'gh-btn disabled';
     status.className = 'gh-status ok';
-    status.innerHTML = 'GitHub Actions sayfa oluşturuyor… 1-2 dk içinde canlıya geçer. '
+    status.innerHTML = (wasEditing ? 'Sayfa güncelleniyor…' : 'GitHub Actions sayfa oluşturuyor…') + ' 1-2 dk içinde canlıya geçer. '
       + '<a href="https://github.com/' + owner + '/' + repo + '/actions" target="_blank" rel="noopener">Actions\'ı izle →</a>';
   } catch(e) {
     btn.disabled = false;
@@ -753,6 +804,168 @@ async function pushToGitHub(){
 var styleEl = document.createElement('style');
 styleEl.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
 document.head.appendChild(styleEl);
+
+// ── Manage Pane ────────────────────────────────────────────────────────────
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showEditBanner(name){
+  document.getElementById('edit-banner').style.display='flex';
+  document.getElementById('edit-banner-name').textContent=name;
+  document.getElementById('step-title').textContent='✏️ Düzenleme — '+name;
+}
+function hideEditBanner(){
+  document.getElementById('edit-banner').style.display='none';
+  editingSlug=null;
+}
+function cancelEdit(){
+  hideEditBanner();
+  document.getElementById('appName').value='';
+  document.getElementById('appSlug').value='';
+  document.getElementById('appId').value='';
+  document.getElementById('playUrl').value='';
+  document.getElementById('devName').value='';
+  document.getElementById('appIcon').value='';
+  document.getElementById('email').value='';
+  document.getElementById('updated').value=(function(){
+    var d=new Date();var m=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+    return d.getDate()+' '+m[d.getMonth()]+' '+d.getFullYear();
+  })();
+  document.querySelectorAll('#svc-container input[type=checkbox]').forEach(function(cb){
+    cb.checked=false;
+    var opt=cb.closest('.svc-opt');
+    if(opt) opt.classList.remove('selected');
+  });
+  goTo(1);
+  showToast('✏️ Düzenleme iptal edildi.');
+}
+
+async function loadManagePane(){
+  var token=localStorage.getItem('gh_token');
+  var owner=localStorage.getItem('gh_owner')||'alidemirci2307';
+  var repo =localStorage.getItem('gh_repo') ||'privacypolicy';
+  if(!token){openTokenModal();return;}
+  var status=document.getElementById('manage-status');
+  var list  =document.getElementById('manage-list');
+  status.textContent='⏳ Yükleniyor…';
+  status.className='gh-status';
+  list.innerHTML='';
+  try{
+    var headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github.v3+json'};
+    var res=await fetch('https://api.github.com/repos/'+owner+'/'+repo+'/contents/apps.json',{headers:headers});
+    if(!res.ok) throw new Error('apps.json alınamadı ('+res.status+').');
+    var fd=await res.json();
+    var decoded=new TextDecoder('utf-8').decode(Uint8Array.from(atob(fd.content.replace(/\n/g,'')),function(c){return c.charCodeAt(0);}));
+    manageApps=JSON.parse(decoded);
+    if(!manageApps.length){
+      status.textContent='';
+      list.innerHTML='<div class="empty-state"><div class="es-icon">📭</div><p>Henüz hiç uygulama yok.</p></div>';
+      return;
+    }
+    status.textContent=manageApps.length+' uygulama bulundu.';
+    status.className='gh-status ok';
+    manageApps.forEach(function(app,idx){
+      var item=document.createElement('div');
+      item.className='manage-app-item';
+      item.innerHTML='<div class="manage-app-icon">'+escHtml(app.icon||'📱')+'</div>'
+        +'<div class="manage-app-info">'
+        +'<div class="manage-app-name">'+escHtml(app.name)+'</div>'
+        +'<div class="manage-app-slug">/'+escHtml(app.slug)+'/ · '+escHtml(app.platform||'android')+'</div>'
+        +'</div>'
+        +'<div class="manage-app-actions">'
+        +'<button class="mng-btn edit">✏ Düzenle</button>'
+        +'<button class="mng-btn del">🗑 Sil</button>'
+        +'</div>';
+      item.querySelector('.mng-btn.edit').addEventListener('click',function(){editApp(idx);});
+      item.querySelector('.mng-btn.del').addEventListener('click',function(){confirmDeleteApp(app.slug,app.name);});
+      list.appendChild(item);
+    });
+  }catch(e){
+    status.className='gh-status err';
+    status.textContent='❌ '+e.message;
+  }
+}
+
+function editApp(idx){
+  var app=manageApps[idx];
+  if(!app) return;
+  var plat=app.platform||'android';
+  document.querySelectorAll('.plat-opt').forEach(function(el){el.classList.remove('selected');});
+  var platEl=document.getElementById('plat-'+plat)||document.getElementById('plat-android');
+  platEl.classList.add('selected');
+  document.getElementById('play-group').style.display=(plat==='ios')?'none':'block';
+  document.getElementById('store-group').style.display=(plat==='android')?'none':'block';
+  renderServices();
+  document.getElementById('appName').value =app.name||'';
+  document.getElementById('appSlug').value =app.slug||'';
+  document.getElementById('appId').value   =app.packageId||'';
+  document.getElementById('playUrl').value =app.playUrl||'';
+  if(document.getElementById('appStoreId')) document.getElementById('appStoreId').value=app.appStoreId||'';
+  document.getElementById('devName').value =app.developerName||'';
+  document.getElementById('appIcon').value =app.icon||'📱';
+  document.getElementById('email').value   =app.developerEmail||'';
+  document.getElementById('updated').value =app.updated||'';
+  if(app.services){
+    Object.keys(app.services).forEach(function(key){
+      var cb=document.getElementById('svc-'+key);
+      if(cb){
+        cb.checked=!!app.services[key];
+        var opt=document.getElementById('opt-'+key);
+        if(opt) opt.classList.toggle('selected',!!app.services[key]);
+      }
+    });
+  }
+  editingSlug=app.slug;
+  showEditBanner(app.name);
+  goTo(1);
+  switchTab('json');
+  showToast('✏️ Düzenleme modu: '+app.name);
+}
+
+function confirmDeleteApp(slug,name){
+  if(!confirm('⚠️ "'+name+'" uygulamasını silmek istiyor musunuz?\n\nBu işlem geri alınamaz:\n• apps.json\'dan kaldırılır\n• '+slug+'/index.html dosyası silinir')){return;}
+  deleteApp(slug,name);
+}
+
+async function deleteApp(slug,name){
+  var token=localStorage.getItem('gh_token');
+  var owner=localStorage.getItem('gh_owner')||'alidemirci2307';
+  var repo =localStorage.getItem('gh_repo') ||'privacypolicy';
+  if(!token){openTokenModal();return;}
+  var headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
+  var status=document.getElementById('manage-status');
+  status.textContent='⏳ "'+name+'" siliniyor…';
+  status.className='gh-status';
+  try{
+    var apiBase='https://api.github.com/repos/'+owner+'/'+repo+'/contents/apps.json';
+    var getRes=await fetch(apiBase,{headers:headers});
+    if(!getRes.ok) throw new Error('apps.json alınamadı ('+getRes.status+').');
+    var fd=await getRes.json();
+    var decoded=new TextDecoder('utf-8').decode(Uint8Array.from(atob(fd.content.replace(/\n/g,'')),function(c){return c.charCodeAt(0);}));
+    var apps=JSON.parse(decoded);
+    var newApps=apps.filter(function(a){return a.slug!==slug;});
+    if(newApps.length===apps.length) throw new Error('Uygulama bulunamadı: "'+slug+'"');
+    var jsonStr=JSON.stringify(newApps,null,2)+'\n';
+    var utf8Bytes=new TextEncoder().encode(jsonStr);
+    var newContent=btoa(String.fromCharCode.apply(null,utf8Bytes));
+    var putRes=await fetch(apiBase,{method:'PUT',headers:headers,body:JSON.stringify({message:'chore: '+name+' gizlilik politikası silindi',content:newContent,sha:fd.sha})});
+    if(!putRes.ok){var ed=await putRes.json();throw new Error(ed.message||'apps.json güncellenemedi.');}
+    // HTML dosyasını sil
+    var htmlApi='https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+slug+'/index.html';
+    var hGet=await fetch(htmlApi,{headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github.v3+json'}});
+    if(hGet.ok){
+      var hd=await hGet.json();
+      await fetch(htmlApi,{method:'DELETE',headers:headers,body:JSON.stringify({message:'chore: '+name+' politika sayfası silindi',sha:hd.sha})});
+    }
+    status.textContent='✅ "'+name+'" başarıyla silindi.';
+    status.className='gh-status ok';
+    showToast('✅ "'+name+'" silindi!');
+    setTimeout(loadManagePane,1200);
+  }catch(e){
+    status.className='gh-status err';
+    status.textContent='❌ '+e.message;
+    showToast('❌ '+e.message);
+  }
+}
 
 // Auto-refresh preview when HTML tab is active and form changes
 var previewDebounce = null;
