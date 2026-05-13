@@ -202,7 +202,7 @@ function buildPage(app) {
   const {
     name, packageId, platform = 'android',
     developerName = '', developerEmail = '',
-    playUrl = '', appStoreId = '', appStoreUrl: _appStoreUrl = '',
+    playUrl: _playUrl = '', appStoreId = '', appStoreUrl: _appStoreUrl = '',
     icon = '📱', services = {}, updated = '', changelog = []
   } = app;
 
@@ -211,6 +211,8 @@ function buildPage(app) {
 
   const isAndroid = platform === 'android' || platform === 'both';
   const isIOS     = platform === 'ios'     || platform === 'both';
+
+  const playUrl = _playUrl || (packageId && isAndroid ? 'https://play.google.com/store/apps/details?id=' + packageId + '&hl=tr' : '');
 
   // Active services filtered by platform
   const activeServices = Object.entries(services)
@@ -432,6 +434,9 @@ function buildPage(app) {
     body.dark .right-item strong{color:#93c5fd!important}
     body.dark .right-item span{color:#cbd5e1!important}
     body.dark .updated-badge{background:rgba(255,255,255,.08);color:rgba(255,255,255,.7)}
+    body.dark section h2{color:#93c5fd}
+    body.dark .toc-head{color:#94a3b8}
+    body.dark a{color:#93c5fd}
     body.dark .store-btn.android{background:#1e40af}
     body.dark .store-btn.ios{background:#312e81}
     body.dark .cl-dot{border-color:#1e293b}

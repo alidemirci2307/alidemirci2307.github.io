@@ -1,6 +1,6 @@
 [
   {
-    "name": "Ãzel GÃ¼venlik SÄ±nav SorularÄ±",
+    "name": "Özel Güvenlik Sınav Soruları",
     "slug": "ozel-guvenlik-sinav-sorulari",
     "packageId": "ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari",
     "platform": "android",
@@ -8,7 +8,7 @@
     "developerEmail": "avsenatercan@gmail.com",
     "playUrl": "https://play.google.com/store/apps/details?id=ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari&hl=tr",
     "appStoreId": "",
-    "icon": "ð¡ï¸",
+    "icon": "🛡️",
     "services": {
       "admob": true,
       "onesignal": true,
@@ -34,11 +34,11 @@
       "supabase": false,
       "fcm": false
     },
-    "updated": "14 MayÄ±s 2026 / May 14, 2026",
+    "updated": "14 Mayıs 2026 / May 14, 2026",
     "changelog": [
       {
-        "date": "MayÄ±s 2026 / May 2026",
-        "tr": "Ä°lk gizlilik politikasÄ± yayÄ±nlandÄ±.",
+        "date": "Mayıs 2026 / May 2026",
+        "tr": "İlk gizlilik politikası yayınlandı.",
         "en": "Initial privacy policy published."
       }
     ]
@@ -50,10 +50,8 @@
     "platform": "android",
     "developerName": "Ali Demirci",
     "developerEmail": "alidemirci2307@gmail.com",
-    "playUrl": "",
     "appStoreId": "",
-    "appStoreUrl": "",
-    "icon": "📱",
+    "icon": "🚗",
     "services": {
       "admob": true,
       "facebook_audience": false,
@@ -79,6 +77,6 @@
       "google_maps": false,
       "supabase": true
     },
-    "updated": "13 Mayıs 2026"
+    "updated": "13 Mayıs 2026 / May 13, 2026"
   }
 ]

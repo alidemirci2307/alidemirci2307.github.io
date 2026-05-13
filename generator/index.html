@@ -234,7 +234,7 @@
           <input type="text" id="appId" placeholder="com.sirket.uygulama"/>
         </div>
         <div class="form-group" id="play-group">
-          <label>Google Play URL</label>
+          <label>Google Play URL <span style="font-weight:400;color:var(--muted)">(Package ID girilince otomatik oluşur)</span></label>
           <input type="text" id="playUrl" placeholder="https://play.google.com/store/apps/details?id=..."/>
         </div>
         <div class="form-group" id="store-group" style="display:none">
@@ -417,6 +417,17 @@ document.getElementById('appName').addEventListener('input', function(){
     .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c')
     .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
   document.getElementById('appSlug').value=s;
+});
+
+document.getElementById('appId').addEventListener('input', function(){
+  var pkg = this.value.trim();
+  var plat = getPlatform();
+  var playField = document.getElementById('playUrl');
+  if (pkg && plat !== 'ios') {
+    playField.value = 'https://play.google.com/store/apps/details?id=' + pkg + '&hl=tr';
+  } else if (!pkg) {
+    playField.value = '';
+  }
 });
 
 document.querySelectorAll('.plat-opt').forEach(function(el){
@@ -693,7 +704,9 @@ async function pushToGitHub(){
     var getRes = await fetch(apiBase, { headers: headers });
     if (!getRes.ok) throw new Error('apps.json alınamadı (' + getRes.status + '). Repo adını ve token yetkisini kontrol edin.');
     var fileData = await getRes.json();
-    var currentContent = JSON.parse(atob(fileData.content.replace(/\n/g, '')));
+    var rawBase64 = fileData.content.replace(/\n/g, '');
+    var decoded = new TextDecoder('utf-8').decode(Uint8Array.from(atob(rawBase64), function(c){ return c.charCodeAt(0); }));
+    var currentContent = JSON.parse(decoded);
 
     // 2. Check for duplicate slug
     if (currentContent.some(function(a){ return a.slug === generatedJson.slug; })) {
@@ -702,7 +715,9 @@ async function pushToGitHub(){
 
     // 3. Append and encode
     currentContent.push(generatedJson);
-    var newContent = btoa(unescape(encodeURIComponent(JSON.stringify(currentContent, null, 2) + '\n')));
+    var jsonStr = JSON.stringify(currentContent, null, 2) + '\n';
+    var utf8Bytes = new TextEncoder().encode(jsonStr);
+    var newContent = btoa(String.fromCharCode.apply(null, utf8Bytes));
 
     // 4. Commit
     var putRes = await fetch(apiBase, {
