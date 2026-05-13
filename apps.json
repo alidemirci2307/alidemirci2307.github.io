@@ -78,5 +78,43 @@
       "supabase": true
     },
     "updated": "13 Mayıs 2026 / May 13, 2026"
+  },
+  {
+    "name": "Yemek Tarifleri 2026",
+    "slug": "yemek-tarifleri-2026",
+    "packageId": "yemek.tarifleri.internetsiz",
+    "platform": "both",
+    "developerName": "Fahreddin Sevindir",
+    "developerEmail": "fahreddinsevindir@gmail.com",
+    "playUrl": "https://play.google.com/store/apps/details?id=yemek.tarifleri.internetsiz&hl=tr",
+    "appStoreId": "111111111",
+    "appStoreUrl": "",
+    "icon": "📱",
+    "services": {
+      "admob": true,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "firebase_analytics": false,
+      "firebase_crashlytics": false,
+      "amplitude": false,
+      "mixpanel": false,
+      "sentry": false,
+      "adjust": false,
+      "appsflyer": false,
+      "onesignal": false,
+      "fcm": false,
+      "firebase_auth": true,
+      "google_signin": true,
+      "apple_signin": true,
+      "facebook_login": false,
+      "play_billing": true,
+      "apple_iap": true,
+      "revenuecat": true,
+      "google_maps": false,
+      "supabase": true
+    },
+    "updated": "13 Mayıs 2026"
   }
 ]
