@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Özel Güvenlik Sınav Soruları",
+    "slug": "ozel-guvenlik-sinav-sorulari",
+    "packageId": "ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari",
+    "playUrl": "https://play.google.com/store/apps/details?id=ozel.guvenlik.sinav.sorulari.ozel_guvenlik_sinav_sorulari&hl=tr",
+    "icon": "🛡️",
+    "email": "avsenatercan@gmail.com",
+    "services": {
+      "admob": true,
+      "onesignal": true,
+      "premium": true,
+      "firebase": true
+    },
+    "updated": "13 Mayıs 2026"
+  }
+]

@@ -27,6 +27,29 @@
     }
     header h1 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; }
     header p { margin-top: 8px; opacity: 0.7; font-size: 0.93rem; }
+    .json-box {
+      background: #1a1a2e;
+      color: #7dd3fc;
+      border-radius: 10px;
+      padding: 16px;
+      font-family: "Menlo", monospace;
+      font-size: 0.78rem;
+      white-space: pre;
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+    .json-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .json-label { font-size: 0.82rem; font-weight: 700; color: #0f3460; }
+    .step-badge {
+      display: inline-block;
+      background: #0f3460;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-right: 8px;
+    }
     .layout {
       max-width: 1100px;
       margin: 0 auto;
@@ -267,6 +290,17 @@
     <button class="preview-btn" id="preview-btn" style="display:none;" onclick="openPreview()">
       🔍 Önizleme (Yeni Sekmede Aç)
     </button>
+
+    <div id="json-section" style="display:none; margin-top:20px;">
+      <div class="json-header">
+        <span class="json-label"><span class="step-badge">2. ADIM</span> apps.json'a ekle</span>
+        <button class="btn-action btn-copy" onclick="copyJson()">Kopyala</button>
+      </div>
+      <div class="json-box" id="json-out"></div>
+      <p style="font-size:0.8rem; color:#888; margin-top:8px;">
+        Bu satırı <code>apps.json</code> dizisine ekleyip push'la → GitHub Actions geri kalanını otomatik yapar.
+      </p>
+    </div>
   </div>
 
 </div>
@@ -474,7 +508,28 @@ ${playLink}
     ta.style.display = 'block';
     ta.value = html;
     document.getElementById('preview-btn').style.display = 'block';
+
+    // JSON entry
+    const slug = document.getElementById('appSlug').value.trim() || 'yeni-uygulama';
+    const jsonEntry = {
+      name: appName,
+      slug,
+      packageId: appId || '',
+      playUrl: playUrl || '',
+      icon: '📱',
+      email,
+      services: { admob, onesignal, premium, firebase },
+      updated: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+    };
+    document.getElementById('json-out').textContent = JSON.stringify(jsonEntry, null, 2);
+    document.getElementById('json-section').style.display = 'block';
+
     showToast('✅ Politika oluşturuldu!');
+  }
+
+  function copyJson() {
+    const text = document.getElementById('json-out').textContent;
+    navigator.clipboard.writeText(text).then(() => showToast('📋 JSON kopyalandı!'));
   }
 
   function copyCode() {
