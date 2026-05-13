@@ -117,6 +117,32 @@
     .step-li p{font-size:.83rem;color:#1e293b}
     .step-li code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:.78rem;font-family:monospace;color:var(--primary)}
 
+    /* GitHub push button */
+    .gh-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:10px;border:none;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:10px}
+    .gh-btn.ready{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 4px 16px rgba(22,163,74,.35)}
+    .gh-btn.ready:hover{opacity:.9;transform:translateY(-1px)}
+    .gh-btn.disabled{background:#f1f5f9;color:#94a3b8;cursor:default}
+    .gh-status{font-size:.78rem;text-align:center;margin-top:8px;min-height:20px;color:var(--muted)}
+    .gh-status.ok{color:#16a34a;font-weight:600}
+    .gh-status.err{color:#dc2626;font-weight:600}
+
+    /* Token modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(2px)}
+    .modal-overlay.hidden{display:none}
+    .modal{background:#fff;border-radius:16px;padding:28px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    .modal h3{font-size:1rem;font-weight:700;color:var(--primary);margin-bottom:6px}
+    .modal p{font-size:.83rem;color:var(--muted);line-height:1.6;margin-bottom:16px}
+    .modal input{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;margin-bottom:8px}
+    .modal input:focus{border-color:var(--primary)}
+    .modal .modal-row{display:flex;gap:8px;margin-top:4px}
+    .modal-btn{flex:1;padding:10px;border-radius:9px;border:none;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .modal-btn.primary{background:var(--primary);color:#fff}
+    .modal-btn.primary:hover{background:var(--primary-l)}
+    .modal-btn.secondary{background:var(--bg);color:var(--muted);border:1.5px solid var(--border)}
+    .modal .warn{font-size:.75rem;color:#f59e0b;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:14px}
+    .settings-btn{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:.82rem;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;display:flex;align-items:center;gap:5px}
+    .settings-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+
     /* Preview iframe */
     .preview-wrap{border-radius:10px;overflow:hidden;border:1px solid var(--border);height:480px}
     .preview-wrap iframe{width:100%;height:100%;border:none;display:block}
@@ -129,7 +155,10 @@
   </style>
 </head>
 <body>
-<div class="topbar"><a href="/">← Tüm Uygulamalar</a></div>
+<div class="topbar" style="display:flex;align-items:center;justify-content:space-between">
+  <a href="/">← Tüm Uygulamalar</a>
+  <button class="settings-btn" onclick="openTokenModal()">⚙ GitHub Ayarları</button>
+</div>
 
 <div class="hero">
   <div class="hero-bg"><span></span><span></span></div>
@@ -277,6 +306,11 @@
             <button class="copy-btn secondary" onclick="downloadHtml()">⬇ İndir</button>
           </div>
           <div class="json-box" id="json-out"></div>
+          <button class="gh-btn disabled" id="gh-btn" onclick="pushToGitHub()">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+            GitHub'a Gönder
+          </button>
+          <div class="gh-status" id="gh-status"></div>
         </div>
       </div>
 
@@ -301,6 +335,28 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- GitHub Token Modal -->
+<div class="modal-overlay hidden" id="token-modal">
+  <div class="modal">
+    <h3>⚙ GitHub Ayarları</h3>
+    <p>apps.json dosyasını otomatik güncellemek için GitHub Personal Access Token girin. Token sadece tarayıcınızda saklanır, hiçbir sunucuya gönderilmez.</p>
+    <div class="warn">⚠ Token'ınızı kimseyle paylaşmayın. En az <strong>repo</strong> yetkisi gereklidir.</div>
+    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:5px">GitHub Kullanıcı Adı</label>
+    <input type="text" id="gh-owner" placeholder="alidemirci2307"/>
+    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:5px;margin-top:8px">Repo Adı</label>
+    <input type="text" id="gh-repo" placeholder="privacypolicy"/>
+    <label style="font-size:.8rem;font-weight:600;color:#475569;display:block;margin-bottom:5px;margin-top:8px">Personal Access Token</label>
+    <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/>
+    <p style="font-size:.75rem;color:#94a3b8;margin-top:4px;margin-bottom:0">
+      Token oluşturmak için: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → "Contents" read+write yetkisi ver.
+    </p>
+    <div class="modal-row" style="margin-top:16px">
+      <button class="modal-btn secondary" onclick="closeTokenModal()">İptal</button>
+      <button class="modal-btn primary" onclick="saveToken()">Kaydet</button>
     </div>
   </div>
 </div>
@@ -479,6 +535,7 @@ function generate(){
   document.getElementById('json-out').textContent=JSON.stringify(generatedJson,null,2);
 
   refreshPreview();
+  updateGhBtn();
   switchTab('json');
   showToast('✅ Politika oluşturuldu!');
 }
@@ -579,6 +636,109 @@ function showToast(msg){
   setTimeout(function(){t.classList.remove('show');},2800);
 }
 
+// ── GitHub Push ────────────────────────────────────────────────────────────
+function openTokenModal(){
+  var modal = document.getElementById('token-modal');
+  document.getElementById('gh-owner').value = localStorage.getItem('gh_owner') || 'alidemirci2307';
+  document.getElementById('gh-repo').value  = localStorage.getItem('gh_repo')  || 'privacypolicy';
+  document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
+  modal.classList.remove('hidden');
+}
+function closeTokenModal(){
+  document.getElementById('token-modal').classList.add('hidden');
+}
+function saveToken(){
+  var owner = document.getElementById('gh-owner').value.trim();
+  var repo  = document.getElementById('gh-repo').value.trim();
+  var token = document.getElementById('gh-token').value.trim();
+  if (!owner || !repo || !token) { showToast('⚠️ Tüm alanları doldurun.'); return; }
+  localStorage.setItem('gh_owner', owner);
+  localStorage.setItem('gh_repo',  repo);
+  localStorage.setItem('gh_token', token);
+  closeTokenModal();
+  showToast('✅ GitHub ayarları kaydedildi!');
+  updateGhBtn();
+}
+document.getElementById('token-modal').addEventListener('click', function(e){
+  if (e.target === this) closeTokenModal();
+});
+
+function updateGhBtn(){
+  var btn = document.getElementById('gh-btn');
+  var hasToken = !!localStorage.getItem('gh_token');
+  var hasJson  = !!generatedJson;
+  btn.className = 'gh-btn ' + (hasToken && hasJson ? 'ready' : 'disabled');
+}
+
+async function pushToGitHub(){
+  var token = localStorage.getItem('gh_token');
+  var owner = localStorage.getItem('gh_owner') || 'alidemirci2307';
+  var repo  = localStorage.getItem('gh_repo')  || 'privacypolicy';
+
+  if (!token) { openTokenModal(); return; }
+  if (!generatedJson) { showToast('⚠️ Önce politika oluşturun.'); return; }
+
+  var btn    = document.getElementById('gh-btn');
+  var status = document.getElementById('gh-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-block;animation:spin .8s linear infinite">⏳</span> Gönderiliyor…';
+  status.className = 'gh-status';
+  status.textContent = '';
+
+  var apiBase = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/apps.json';
+  var headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+
+  try {
+    // 1. Fetch current apps.json
+    var getRes = await fetch(apiBase, { headers: headers });
+    if (!getRes.ok) throw new Error('apps.json alınamadı (' + getRes.status + '). Repo adını ve token yetkisini kontrol edin.');
+    var fileData = await getRes.json();
+    var currentContent = JSON.parse(atob(fileData.content.replace(/\n/g, '')));
+
+    // 2. Check for duplicate slug
+    if (currentContent.some(function(a){ return a.slug === generatedJson.slug; })) {
+      throw new Error('Bu slug zaten mevcut: "' + generatedJson.slug + '". Farklı bir URL slug kullanın.');
+    }
+
+    // 3. Append and encode
+    currentContent.push(generatedJson);
+    var newContent = btoa(unescape(encodeURIComponent(JSON.stringify(currentContent, null, 2) + '\n')));
+
+    // 4. Commit
+    var putRes = await fetch(apiBase, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify({
+        message: 'feat: ' + generatedJson.name + ' gizlilik politikası eklendi',
+        content: newContent,
+        sha: fileData.sha
+      })
+    });
+    if (!putRes.ok) {
+      var err = await putRes.json();
+      throw new Error(err.message || 'Commit başarısız (' + putRes.status + ')');
+    }
+
+    // 5. Success
+    btn.innerHTML = '✅ GitHub\'a Gönderildi!';
+    btn.className = 'gh-btn disabled';
+    status.className = 'gh-status ok';
+    status.innerHTML = 'GitHub Actions sayfa oluşturuyor… 1-2 dk içinde canlıya geçer. '
+      + '<a href="https://github.com/' + owner + '/' + repo + '/actions" target="_blank" rel="noopener">Actions\'ı izle →</a>';
+  } catch(e) {
+    btn.disabled = false;
+    updateGhBtn();
+    btn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg> GitHub\'a Gönder';
+    status.className = 'gh-status err';
+    status.textContent = '❌ ' + e.message;
+  }
+}
+
+// spin animation for loading state
+var styleEl = document.createElement('style');
+styleEl.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(styleEl);
+
 // Auto-refresh preview when HTML tab is active and form changes
 var previewDebounce = null;
 function schedulePreviewRefresh(){
@@ -600,6 +760,7 @@ document.addEventListener('change', function(e){
 
 // Initial preview load
 refreshPreview();
+updateGhBtn();
 
 // GSAP entrance
 gsap.from('.hero h1',{duration:.8,y:25,opacity:0,ease:'power3.out',delay:.1});

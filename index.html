@@ -45,29 +45,47 @@
     .filter-tab.active,.filter-tab:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 
     /* Grid */
-    .app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
-    .app-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease,box-shadow .2s}
+    .app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+
+    /* Card */
+    .app-card{background:var(--surface);border-radius:20px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.06);opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease,box-shadow .25s}
     .app-card.visible{opacity:1;transform:translateY(0)}
-    .app-card:hover{box-shadow:0 10px 32px rgba(0,0,0,.1);transform:translateY(-3px) !important}
-    .card-top{height:5px;background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
-    .card-top.ios{background:linear-gradient(90deg,#06b6d4,#0f3460)}
-    .card-top.both{background:linear-gradient(90deg,#3b82f6,#ec4899)}
-    .card-body{padding:22px 22px 18px}
-    .card-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-    .app-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#0f3460,#1a6bb5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 4px 12px rgba(15,52,96,.2)}
-    .app-name{font-weight:700;font-size:.98rem;color:#1e293b}
-    .app-pkg{font-size:.72rem;color:var(--muted);margin-top:3px;font-family:monospace}
-    .plat-row{display:flex;align-items:center;gap:6px;margin-bottom:12px}
-    .plat-chip{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px}
+    .app-card:hover{box-shadow:0 12px 40px rgba(0,0,0,.12);transform:translateY(-4px) !important}
+    body.dark .app-card:hover{box-shadow:0 12px 40px rgba(0,0,0,.35)}
+
+    /* Accent bar */
+    .card-accent{height:4px;background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+    .card-accent.ios{background:linear-gradient(90deg,#06b6d4,#0ea5e9)}
+    .card-accent.both{background:linear-gradient(90deg,#3b82f6,#ec4899)}
+
+    /* Body */
+    .card-body{padding:20px 20px 16px}
+
+    /* Header row */
+    .card-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+    .app-icon{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#0f3460,#1a6bb5);display:flex;align-items:center;justify-content:center;font-size:1.55rem;flex-shrink:0;box-shadow:0 4px 14px rgba(15,52,96,.25)}
+    .app-info{flex:1;min-width:0}
+    .app-name{font-weight:700;font-size:.97rem;color:var(--text);line-height:1.3;margin-bottom:3px}
+    .app-pkg{font-size:.68rem;color:var(--muted);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+    /* Meta row: platform + tags */
+    .card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+    .plat-chip{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
     .plat-chip.android{background:#dcfce7;color:#15803d}
     .plat-chip.ios{background:#dbeafe;color:#1d4ed8}
-    .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
-    .tag{font-size:.7rem;padding:3px 9px;border-radius:20px;background:#f1f5f9;color:#475569;font-weight:600}
-    .card-links{display:flex;gap:8px}
-    .link-btn{flex:1;text-align:center;padding:9px 12px;border-radius:10px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .2s}
-    .link-btn:hover{text-decoration:none;opacity:.85}
-    .btn-policy{background:var(--primary);color:#fff}
-    .btn-store{background:#f1f5f9;color:var(--primary)}
+    body.dark .plat-chip.android{background:#14532d40;color:#4ade80}
+    body.dark .plat-chip.ios{background:#1e3a5f40;color:#93c5fd}
+    .tag{font-size:.67rem;padding:3px 9px;border-radius:20px;background:#f1f5f9;color:#475569;font-weight:600}
+    body.dark .tag{background:#334155;color:#94a3b8}
+    .tag-more{font-size:.67rem;padding:3px 9px;border-radius:20px;background:transparent;color:var(--muted);font-weight:600;border:1px dashed var(--border)}
+
+    /* Footer buttons */
+    .card-footer{padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+    .btn-policy{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:11px;background:linear-gradient(135deg,#0f3460,#1a4fa0);color:#fff;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap}
+    .btn-policy:hover{opacity:.88;transform:translateY(-1px);text-decoration:none}
+    .btn-policy svg{flex-shrink:0}
+    .btn-store{width:40px;height:40px;border-radius:11px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;text-decoration:none;color:var(--muted);flex-shrink:0;transition:all .2s}
+    .btn-store:hover{border-color:var(--primary);color:var(--primary);background:var(--surface);transform:translateY(-1px);text-decoration:none}
 
     /* Empty state */
     .empty{grid-column:1/-1;text-align:center;padding:64px 0;color:var(--muted)}
@@ -161,23 +179,41 @@ function renderGrid(apps){
     return;
   }
   grid.innerHTML = filtered.map((app,i)=>{
-    const tags = Object.entries(app.services||{}).filter(([,v])=>v).map(([k])=>'<span class="tag">'+(SVC[k]||k)+'</span>').join('');
+    const allTags = Object.entries(app.services||{}).filter(([,v])=>v).map(([k])=>SVC[k]||k);
+    const MAX_TAGS = 4;
+    const shownTags = allTags.slice(0,MAX_TAGS).map(t=>'<span class="tag">'+t+'</span>').join('');
+    const moreBadge = allTags.length>MAX_TAGS ? '<span class="tag-more">+' +(allTags.length-MAX_TAGS)+ '</span>' : '';
+
     const platChips = app.platform==='both'
       ? '<span class="plat-chip android">Android</span><span class="plat-chip ios">iOS</span>'
       : app.platform==='ios'
         ? '<span class="plat-chip ios">iOS</span>'
         : '<span class="plat-chip android">Android</span>';
-    const topClass = app.platform==='ios'?'ios':app.platform==='both'?'both':'';
-    const storeBtn = (app.playUrl||app.appStoreUrl)
-      ? '<a href="'+(app.playUrl||app.appStoreUrl)+'" target="_blank" rel="noopener" class="link-btn btn-store">Mağaza</a>' : '';
+
+    const accentClass = app.platform==='ios'?'ios':app.platform==='both'?'both':'';
+    const storeUrl = app.playUrl||app.appStoreUrl||'';
+    const storeIcon = app.platform==='ios' ? '🍎' : '▶';
+    const storeBtn = storeUrl
+      ? '<a href="'+storeUrl+'" target="_blank" rel="noopener" class="btn-store" title="Mağazada Aç">'+storeIcon+'</a>' : '';
+
     return '<div class="app-card" style="transition-delay:'+(i*0.06)+'s">'
-      +'<div class="card-top '+topClass+'"></div>'
+      +'<div class="card-accent '+accentClass+'"></div>'
       +'<div class="card-body">'
-      +'<div class="card-header"><div class="app-icon">'+(app.icon||'📱')+'</div>'
-      +'<div><div class="app-name">'+app.name+'</div><div class="app-pkg">'+(app.packageId||'')+'</div></div></div>'
-      +'<div class="plat-row">'+platChips+'</div>'
-      +'<div class="tags">'+tags+'</div>'
-      +'<div class="card-links"><a href="/'+app.slug+'/" class="link-btn btn-policy">Gizlilik Politikası</a>'+storeBtn+'</div>'
+      +'<div class="card-header">'
+      +'<div class="app-icon">'+(app.icon||'📱')+'</div>'
+      +'<div class="app-info">'
+      +'<div class="app-name">'+app.name+'</div>'
+      +(app.packageId?'<div class="app-pkg">'+app.packageId+'</div>':'')
+      +'</div>'
+      +'</div>'
+      +'<div class="card-meta">'+platChips+shownTags+moreBadge+'</div>'
+      +'<div class="card-footer">'
+      +'<a href="/'+app.slug+'/" class="btn-policy">'
+      +'<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>'
+      +'Gizlilik Politikası'
+      +'</a>'
+      +storeBtn
+      +'</div>'
       +'</div></div>';
   }).join('');
   // Trigger reveal
