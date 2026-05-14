@@ -116,5 +116,43 @@
       "supabase": true
     },
     "updated": "13 Mayıs 2026"
+  },
+  {
+    "name": "Ehliyet Sınav Soruları 2026",
+    "slug": "ehliyet-sinav-sorulari-2026-tr",
+    "packageId": "ehliyet.sinav.sorulari.app",
+    "platform": "android",
+    "developerName": "Sena Tercan Demirci",
+    "developerEmail": "avsenatercan@gmail.com",
+    "playUrl": "https://play.google.com/store/apps/details?id=ehliyet.sinav.sorulari.app&hl=tr",
+    "appStoreId": "",
+    "appStoreUrl": "",
+    "icon": "📱",
+    "services": {
+      "admob": true,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "firebase_analytics": true,
+      "firebase_crashlytics": true,
+      "amplitude": false,
+      "mixpanel": false,
+      "sentry": false,
+      "adjust": false,
+      "appsflyer": false,
+      "onesignal": true,
+      "fcm": false,
+      "firebase_auth": false,
+      "google_signin": false,
+      "apple_signin": false,
+      "facebook_login": false,
+      "play_billing": true,
+      "apple_iap": false,
+      "revenuecat": false,
+      "google_maps": false,
+      "supabase": false
+    },
+    "updated": "14 Mayıs 2026"
   }
 ]
