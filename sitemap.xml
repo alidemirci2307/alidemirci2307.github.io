@@ -2,49 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://alidemirci2307.github.io/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/generator/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/delete-request/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/qr/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/ozel-guvenlik-sinav-sorulari/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/ehliyet-sinav-sorulari-2026/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/yemek-tarifleri-2026/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://alidemirci2307.github.io/ehliyet-sinav-sorulari-2026-tr/</loc>
-    <lastmod>2026-05-14</lastmod>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://alidemirci2307.github.io/recur-subscription-tracker/</loc>
+    <lastmod>2026-06-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
