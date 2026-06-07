@@ -192,5 +192,43 @@
       "supabase": false
     },
     "updated": "5 Haziran 2026"
+  },
+  {
+    "name": "Ezan Vakti",
+    "slug": "ezan-vakti",
+    "packageId": "com.namazvakti.ezan",
+    "platform": "android",
+    "developerName": "Fahreddin Sevindir",
+    "developerEmail": "fahreddinsevindir@gmail.com",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.namazvakti.ezan&hl=tr",
+    "appStoreId": "",
+    "appStoreUrl": "",
+    "icon": "📱",
+    "services": {
+      "admob": true,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "firebase_analytics": false,
+      "firebase_crashlytics": false,
+      "amplitude": false,
+      "mixpanel": false,
+      "sentry": false,
+      "adjust": false,
+      "appsflyer": false,
+      "onesignal": false,
+      "fcm": false,
+      "firebase_auth": false,
+      "google_signin": false,
+      "apple_signin": false,
+      "facebook_login": false,
+      "play_billing": false,
+      "apple_iap": false,
+      "revenuecat": true,
+      "google_maps": true,
+      "supabase": true
+    },
+    "updated": "7 Haziran 2026"
   }
 ]
