@@ -230,5 +230,43 @@
       "supabase": true
     },
     "updated": "7 Haziran 2026"
+  },
+  {
+    "name": "Yemek Tarifleri",
+    "slug": "yemek-tarifleri",
+    "packageId": "com.tarify.app",
+    "platform": "android",
+    "developerName": "Fahreddin Sevindir",
+    "developerEmail": "fahreddinsevindir@gmail.com",
+    "playUrl": "https://play.google.com/store/apps/details?id=com.tarify.app&hl=tr",
+    "appStoreId": "",
+    "appStoreUrl": "",
+    "icon": "📱",
+    "services": {
+      "admob": true,
+      "facebook_audience": false,
+      "unity_ads": false,
+      "applovin": false,
+      "ironsource": false,
+      "firebase_analytics": false,
+      "firebase_crashlytics": false,
+      "amplitude": false,
+      "mixpanel": false,
+      "sentry": false,
+      "adjust": false,
+      "appsflyer": false,
+      "onesignal": false,
+      "fcm": false,
+      "firebase_auth": true,
+      "google_signin": true,
+      "apple_signin": false,
+      "facebook_login": false,
+      "play_billing": false,
+      "apple_iap": false,
+      "revenuecat": true,
+      "google_maps": false,
+      "supabase": true
+    },
+    "updated": "7 Haziran 2026"
   }
 ]
